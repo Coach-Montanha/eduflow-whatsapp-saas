@@ -125,62 +125,184 @@
       </div>
     </header>
 
-    <!-- TAB CONTENT 1: DASHBOARD -->
+    <!-- TAB CONTENT 1: DASHBOARD (WORKFLOW COMPLETO ESTILO BACKEND) -->
     <section id="tabContentDashboard" class="tab-page space-y-6">
+      
+      <!-- Top Summary Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
-          <span class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Seus Contatos</span>
-          <div id="statContactsCount" class="text-3xl font-extrabold text-white">0</div>
-          <span class="text-xs text-emerald-400 font-medium">✓ Base Isolada do Usuário</span>
-        </div>
-
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
-          <span class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Disparos Realizados</span>
-          <div id="statDispatchesCount" class="text-3xl font-extrabold text-white">0</div>
-          <span class="text-xs text-cyan-400 font-medium">📱 Histórico Permanente</span>
-        </div>
-
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
-          <span class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Agendamentos Ativos</span>
-          <div id="statActiveSchedules" class="text-3xl font-extrabold text-white">0</div>
-          <span class="text-xs text-amber-400 font-medium">⏳ Fila Sequencial</span>
-        </div>
-
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
-          <span class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Status da Sessão</span>
-          <div class="text-xl font-extrabold text-emerald-400 flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span> Ativa
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Total de Contatos Reais</span>
+            <span class="text-purple-400">👥</span>
           </div>
-          <span class="text-xs text-[var(--muted-foreground)]">QR Code Emparelhado</span>
+          <div id="statContactsCount" class="text-3xl font-extrabold text-white">0</div>
+          <span class="text-xs text-emerald-400 font-medium">✓ Agenda Base Sincronizada</span>
+        </div>
+
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Turma CTH (Híbrido)</span>
+            <span class="text-cyan-400">🏋️</span>
+          </div>
+          <div id="statCthCount" class="text-3xl font-extrabold text-white">0</div>
+          <span class="text-xs text-cyan-400 font-medium">🏋️ Alunos Treinamento Híbrido</span>
+        </div>
+
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Leads & Interessados</span>
+            <span class="text-amber-400">⚡</span>
+          </div>
+          <div id="statLeadsCount" class="text-3xl font-extrabold text-white">0</div>
+          <span class="text-xs text-amber-400 font-medium">🚀 Potenciais Novos Alunos</span>
+        </div>
+
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Disparos Registrados</span>
+            <span class="text-emerald-400">✓</span>
+          </div>
+          <div id="statDispatchesCount" class="text-3xl font-extrabold text-white">0</div>
+          <span class="text-xs text-purple-400 font-medium">📱 Modo PWA Nativo Habilitado</span>
         </div>
       </div>
 
-      <!-- Quick Action Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
-          <h3 class="font-bold text-base text-white flex items-center gap-2">
-            👥 Importar Sua Lista de Contatos (CSV / Excel)
-          </h3>
-          <p class="text-xs text-[var(--muted-foreground)]">Carregue um arquivo CSV do seu celular ou computador contendo Nome, Telefone e Categoria.</p>
-          <button onclick="switchTab('contacts')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-md">
-            Gerenciar & Importar Contatos →
-          </button>
+      <!-- Main Workspace 2-Column Grid (Backend Dashboard Layout) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Column 1: Nominal Contact Selector (6 cols) -->
+        <div class="lg:col-span-6 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4 shadow-xl">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[var(--border)] pb-4">
+            <div>
+              <h3 class="font-bold text-base text-white">1. Seleção Nominal de Contatos</h3>
+              <p class="text-xs text-[var(--muted-foreground)]">Filtre, busque e selecione nominalmente os destinatários</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="selectAllVisibleContacts()" class="text-[11px] text-cyan-400 hover:underline font-bold">Selecionar Visíveis</button>
+              <span class="text-[11px] text-[var(--border)]">|</span>
+              <button type="button" onclick="clearSelectedContacts()" class="text-[11px] text-red-400 hover:underline font-bold">Limpar Seleção</button>
+            </div>
+          </div>
+
+          <!-- Search & Filter Bar -->
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" id="contactSearchInput" oninput="renderContactsTable()" placeholder="🔍 Buscar por Nome ou Telefone..." class="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-purple-500 font-medium">
+            
+            <select id="categoryFilterSelect" onchange="renderContactsTable()" class="bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-purple-500 font-semibold">
+              <option value="all">Todas as Categorias</option>
+              <option value="CTH">🏋️ CTH (Híbrido)</option>
+              <option value="LEAD">🚀 LEAD</option>
+              <option value="PT">👤 PT</option>
+              <option value="GERAL">📋 GERAL</option>
+            </select>
+          </div>
+
+          <!-- Action buttons for Contacts -->
+          <div class="flex items-center justify-between gap-2 bg-[var(--background)] p-2.5 rounded-xl border border-[var(--border)] text-xs">
+            <span id="selectedCountBadge" class="font-bold text-purple-300">Nenhum contato selecionado</span>
+            <div class="flex gap-2">
+              <button type="button" onclick="triggerCsvImport()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg transition font-bold text-[11px]">
+                📁 + Importar CSV
+              </button>
+              <button type="button" onclick="openAddContactModal()" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 px-2.5 py-1 rounded-lg transition font-bold text-[11px]">
+                + Novo
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrollable Contacts List -->
+          <div class="border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--background)]">
+            <div class="max-h-[380px] overflow-y-auto custom-scrollbar divide-y divide-[var(--border)]" id="contactsTableList">
+              <!-- Rendered dynamically via JS -->
+            </div>
+          </div>
         </div>
 
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
-          <h3 class="font-bold text-base text-white flex items-center gap-2">
-            📱 Emparelhar Seu WhatsApp
-          </h3>
-          <p class="text-xs text-[var(--muted-foreground)]">Conecte sua conta do WhatsApp lendo o QR Code exclusivo da sua sessão.</p>
-          <button onclick="switchTab('qrcode')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-md">
-            Abrir QR Code de Conexão →
-          </button>
+        <!-- Column 2: Configure WhatsApp Dispatch (6 cols) -->
+        <div class="lg:col-span-6 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4 shadow-xl">
+          <div class="border-b border-[var(--border)] pb-4">
+            <h3 class="font-bold text-base text-white">2. Configurar Disparo WhatsApp</h3>
+            <p class="text-xs text-[var(--muted-foreground)]">Mensagem, mídias e agendamento de horário</p>
+          </div>
+
+          <!-- Selected target summary -->
+          <div class="bg-[var(--background)] p-3 rounded-xl border border-purple-500/30 text-xs space-y-1">
+            <span class="block text-[11px] text-[var(--muted-foreground)] font-semibold uppercase tracking-wider">DESTINATÁRIOS SELECIONADOS:</span>
+            <span id="dispatchTargetSummary" class="font-bold text-sm text-purple-300 block">Nenhum contato selecionado</span>
+          </div>
+
+          <!-- Form controls -->
+          <div class="space-y-4 text-xs">
+            
+            <!-- Attachment selection -->
+            <div class="space-y-1.5">
+              <label class="block font-semibold text-slate-300">Anexar Mídia (Vídeo, Imagem, Doc):</label>
+              <select id="mediaSelect" onchange="handleMediaSelectChange(this)" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
+                <option value="">🚫 Somente Texto (Sem Anexo)</option>
+                <option value="brag.mp4">🎬 Vídeo Demonstrativo (brag.mp4)</option>
+                <option value="contact-sheet.jpg">🖼️ Tabela de Contatos (contact-sheet.jpg)</option>
+                <option value="custom">📁 Escolher do Meu Computador / Celular...</option>
+              </select>
+              <input type="file" id="deviceFileInput" onchange="uploadDeviceFile(this)" class="hidden" accept="image/*,video/*,application/pdf">
+              <div id="fileUploadBadge" class="hidden text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/30">
+                <span id="fileNameDisplay">✓ Arquivo Anexado</span>
+              </div>
+            </div>
+
+            <!-- Quick templates bar -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center">
+                <label class="font-semibold text-slate-300">Modelos Rápidos:</label>
+                <button type="button" onclick="openTemplatesModal()" class="text-[11px] text-purple-400 hover:underline font-bold">⚙️ Editar Modelos</button>
+              </div>
+              <div id="quickTemplatesContainer" class="flex flex-wrap gap-2">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Message text area -->
+            <div class="space-y-1.5">
+              <label class="block font-semibold text-slate-300">Mensagem do Disparo:</label>
+              <textarea id="messageText" rows="4" placeholder="Escreva a mensagem personalizada aqui..." class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-white outline-none focus:border-purple-500 resize-none font-sans text-xs leading-relaxed"></textarea>
+            </div>
+
+            <!-- Scheduling / Immediate controls -->
+            <div class="grid grid-cols-2 gap-3 pt-1">
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Data:</label>
+                <input type="date" id="scheduleDate" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-mono">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Horário:</label>
+                <input type="time" id="scheduleTime" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-mono">
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <button type="button" onclick="triggerSendNow()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                ⚡ Enviar Agora
+              </button>
+              <button type="button" onclick="handleDispatchSubmitDirect()" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                ⏳ Agendar Disparo
+              </button>
+            </div>
+
+          </div>
         </div>
+
       </div>
     </section>
 
     <!-- TAB CONTENT 2: CONTATOS (CSV & MANUAL) -->
     <section id="tabContentContacts" class="tab-page hidden space-y-6">
+      <div class="flex justify-between items-center bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] shadow-md">
+        <button onclick="switchTab('dashboard')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          ← Voltar ao Início
+        </button>
+        <span class="text-xs font-semibold text-[var(--muted-foreground)]">Gestão Nominal de Base</span>
+      </div>
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[var(--border)] pb-4">
           <div>
@@ -224,6 +346,12 @@
 
     <!-- TAB CONTENT 3: DISPARAR & AGENDAR -->
     <section id="tabContentDispatch" class="tab-page hidden space-y-6">
+      <div class="flex justify-between items-center bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] shadow-md">
+        <button onclick="switchTab('dashboard')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          ← Voltar ao Início
+        </button>
+        <span class="text-xs font-semibold text-[var(--muted-foreground)]">Painel de Disparos & Agendamento</span>
+      </div>
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <!-- Left: Target Selector (5 cols) -->
@@ -347,6 +475,12 @@
 
     <!-- TAB CONTENT 4: CONEXÃO QR CODE -->
     <section id="tabContentQrcode" class="tab-page hidden space-y-6">
+      <div class="flex justify-between items-center bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] shadow-md max-w-xl mx-auto">
+        <button onclick="switchTab('dashboard')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          ← Voltar ao Início
+        </button>
+        <span class="text-xs font-semibold text-[var(--muted-foreground)]">Emparelhamento de Sessão</span>
+      </div>
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 max-w-xl mx-auto space-y-6">
         <div class="text-center space-y-1">
           <h3 class="font-bold text-lg text-white">Conexão da Conta WhatsApp</h3>
@@ -420,6 +554,12 @@
 
     <!-- TAB CONTENT 5: PERFIL & CONFIGURAÇÕES -->
     <section id="tabContentProfile" class="tab-page hidden space-y-6">
+      <div class="flex justify-between items-center bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] shadow-md max-w-2xl mx-auto">
+        <button onclick="switchTab('dashboard')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          ← Voltar ao Início
+        </button>
+        <span class="text-xs font-semibold text-[var(--muted-foreground)]">Configurações do Usuário</span>
+      </div>
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 max-w-2xl mx-auto space-y-6">
         <h3 class="font-bold text-lg text-white border-b border-[var(--border)] pb-3">Sua Conta & Configurações SaaS</h3>
 
@@ -731,10 +871,33 @@
       renderContactsTable();
     }
 
+    function selectAllVisibleContacts() {
+      const query = (document.getElementById('contactSearchInput')?.value || '').toLowerCase();
+      const cat = document.getElementById('categoryFilterSelect')?.value || 'all';
+      
+      userContacts.forEach(c => {
+        const matchesQuery = !query || c.name.toLowerCase().includes(query) || c.phone.includes(query);
+        const matchesCat = cat === 'all' || c.category === cat;
+        if (matchesQuery && matchesCat) {
+          selectedContactIds.add(c.id);
+        }
+      });
+      renderContactsTable();
+    }
+
+    function clearSelectedContacts() {
+      selectedContactIds.clear();
+      renderContactsTable();
+    }
+
     function renderContactsTable() {
-      const query = document.getElementById('contactSearchInput').value.toLowerCase();
-      const cat = document.getElementById('categoryFilterSelect').value;
+      const queryInput = document.getElementById('contactSearchInput');
+      const catSelect = document.getElementById('categoryFilterSelect');
+      const query = (queryInput ? queryInput.value : '').toLowerCase();
+      const cat = catSelect ? catSelect.value : 'all';
+
       const container = document.getElementById('contactsTableList');
+      if (!container) return;
       container.innerHTML = '';
 
       const filtered = userContacts.filter(c => {
@@ -743,7 +906,19 @@
         return matchesQuery && matchesCat;
       });
 
-      document.getElementById('statContactsCount').innerText = userContacts.length;
+      const cthCount = userContacts.filter(c => c.category === 'CTH').length;
+      const leadsCount = userContacts.filter(c => c.category === 'LEAD').length;
+
+      if (document.getElementById('statContactsCount')) document.getElementById('statContactsCount').innerText = userContacts.length;
+      if (document.getElementById('statCthCount')) document.getElementById('statCthCount').innerText = cthCount;
+      if (document.getElementById('statLeadsCount')) document.getElementById('statLeadsCount').innerText = leadsCount;
+
+      const selBadge = document.getElementById('selectedCountBadge');
+      if (selBadge) {
+        selBadge.innerText = selectedContactIds.size === 0 
+          ? 'Nenhum contato selecionado' 
+          : `👥 ${selectedContactIds.size} Contatos Selecionados`;
+      }
 
       if (filtered.length === 0) {
         container.innerHTML = '<div class="p-4 text-center text-xs text-[var(--muted-foreground)]">Nenhum contato encontrado.</div>';
