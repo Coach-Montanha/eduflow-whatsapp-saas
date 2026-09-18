@@ -696,6 +696,51 @@
       { id: 'tpl_3', title: '🚀 Boas-vindas', text: 'Olá! Seja muito bem-vindo à plataforma EduFlow! Qualquer dúvida, nosso Tutor IA 24h está à disposição. 🚀' }
     ];
 
+    // ====================================================================
+    // RUFLO + /ECO TOKEN ECONOMY ENGINE
+    // ====================================================================
+    const RufloEcoWhatsAppEngine = {
+      cache: new Map(),
+      stats: {
+        queriesProcessed: 0,
+        tokensSaved: 0,
+        cacheHits: 0
+      },
+      
+      // 1. Compressão de Contexto (/eco Context Pruning)
+      optimizePromptContext: function(contactName, category, historyMessages, maxItems = 4) {
+        const recent = historyMessages ? historyMessages.slice(-maxItems) : [];
+        return `[Contato: ${contactName} | Cat: ${category}]\nHistórico: ${recent.join(' | ')}`;
+      },
+      
+      // 2. Cache Semântico de 0 Tokens
+      getCachedResponse: function(promptKey) {
+        const key = promptKey.trim().toLowerCase();
+        if (this.cache.has(key)) {
+          this.stats.cacheHits++;
+          this.stats.tokensSaved += 280;
+          return { text: this.cache.get(key), cached: true };
+        }
+        return null;
+      },
+
+      setCachedResponse: function(promptKey, responseText) {
+        const key = promptKey.trim().toLowerCase();
+        if (this.cache.size > 150) {
+          const firstKey = this.cache.keys().next().value;
+          this.cache.delete(firstKey);
+        }
+        this.cache.set(key, responseText);
+      },
+
+      // 3. Seleção de Modelo (Model Tiering)
+      selectModelTier: function(dispatchType) {
+        if (dispatchType === 'TEXT_ONLY') return 'gemini-2.5-flash-lite';
+        if (dispatchType === 'AUTOMATED_REPLY') return 'gemini-2.5-flash';
+        return 'gemini-2.5-pro';
+      }
+    };
+
     
     function getApiBaseUrl() {
       const saved = localStorage.getItem('eduflow_api_url');
