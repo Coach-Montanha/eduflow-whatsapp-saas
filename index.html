@@ -109,7 +109,11 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button type="button" onclick="configureApiUrl()" class="flex items-center gap-1.5 bg-[var(--background)] hover:bg-[var(--border)] border border-[var(--border)] text-xs text-purple-300 hover:text-white px-2.5 py-1.5 rounded-xl transition font-semibold" title="Configurar URL da API Baileys/Backend">
+          ⚙️ Backend
+        </button>
+
         <div class="hidden sm:flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs px-3 py-1.5 rounded-xl font-semibold">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span id="headerConnectionStatus">WhatsApp Conectado</span>
@@ -510,6 +514,24 @@
     ];
 
     
+    function getApiBaseUrl() {
+      const saved = localStorage.getItem('eduflow_api_url');
+      if (saved && saved.trim()) return saved.trim().replace(/\/+$/, '');
+      if (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) {
+        return 'http://localhost:3001';
+      }
+      return 'https://humanitarian-johnny-requesting-epic.trycloudflare.com';
+    }
+
+    function configureApiUrl() {
+      const current = getApiBaseUrl();
+      const input = prompt('Informe a URL do Servidor Backend Baileys / Tunnel:', current);
+      if (input !== null && input.trim()) {
+        localStorage.setItem('eduflow_api_url', input.trim());
+        alert('URL da API atualizada para: ' + input.trim());
+      }
+    }
+
     function switchPairingMode(mode) {
       if (mode === 'qr') {
         document.getElementById('tabConnectQr').className = 'flex-1 py-2 font-bold rounded-lg bg-purple-600 text-white transition';
@@ -531,8 +553,11 @@
         return;
       }
 
+      const btn = document.querySelector("#pairingModePhone button[onclick='requestPhonePairingCode()']");
+      if (btn) btn.innerText = '⏳ Gerando Código Real...';
+
       try {
-        const baseUrl = window.API_BASE_URL || (window.location.origin.includes('http') ? window.location.origin : 'http://localhost:3001');
+        const baseUrl = getApiBaseUrl();
         const response = await fetch(baseUrl + '/api/request-pairing-code', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -540,32 +565,18 @@
         });
         const res = await response.json();
         
-        let code = '';
-        if (res && res.pairingCode) {
-          code = res.pairingCode;
+        if (res && res.success && res.pairingCode) {
+          const code = res.pairingCode;
+          document.getElementById('generatedPairingCode').innerText = code;
+          document.getElementById('codeHintText').innerText = code;
+          document.getElementById('pairingCodeDisplayContainer').classList.remove('hidden');
         } else {
-          // 8-character fallback format (4 chars - 4 chars)
-          const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-          let p1 = '', p2 = '';
-          for(let i=0; i<4; i++) p1 += chars.charAt(Math.floor(Math.random() * chars.length));
-          for(let i=0; i<4; i++) p2 += chars.charAt(Math.floor(Math.random() * chars.length));
-          code = p1 + '-' + p2;
+          alert('Erro no WhatsApp: ' + (res.error || 'Erro ao obter código real do servidor'));
         }
-
-        document.getElementById('generatedPairingCode').innerText = code;
-        document.getElementById('codeHintText').innerText = code;
-        document.getElementById('pairingCodeDisplayContainer').classList.remove('hidden');
       } catch (err) {
-        // 8-character fallback format (4 chars - 4 chars)
-        const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-        let p1 = '', p2 = '';
-        for(let i=0; i<4; i++) p1 += chars.charAt(Math.floor(Math.random() * chars.length));
-        for(let i=0; i<4; i++) p2 += chars.charAt(Math.floor(Math.random() * chars.length));
-        const code = p1 + '-' + p2;
-
-        document.getElementById('generatedPairingCode').innerText = code;
-        document.getElementById('codeHintText').innerText = code;
-        document.getElementById('pairingCodeDisplayContainer').classList.remove('hidden');
+        alert('⚠️ Erro de conexão com o servidor Baileys (' + getApiBaseUrl() + '). Verifique se o servidor backend está rodando.');
+      } finally {
+        if (btn) btn.innerText = '⚡ Gerar Código';
       }
     }
 
@@ -787,7 +798,7 @@
       reader.onload = async function(e) {
         const base64Data = e.target.result;
         try {
-          const baseUrl = window.location.origin.includes('http') ? window.location.origin : 'http://localhost:3001';
+          const baseUrl = getApiBaseUrl();
           const response = await fetch(baseUrl + '/api/upload-media', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -929,7 +940,7 @@
       if (confirm('Deseja limpar completamente todo o histórico local?')) {
         localStorage.removeItem('eduflow_history_' + currentUser.email);
         try {
-          const baseUrl = window.location.origin.includes('http') ? window.location.origin : 'http://localhost:3001';
+          const baseUrl = getApiBaseUrl();
           fetch(baseUrl + '/api/clear-history', { method: 'POST' });
         } catch(e){}
         renderDispatchesHistory();
