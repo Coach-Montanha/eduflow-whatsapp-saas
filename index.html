@@ -532,7 +532,7 @@
       }
 
       try {
-        const baseUrl = window.location.origin.includes('http') ? window.location.origin : 'http://localhost:3001';
+        const baseUrl = window.API_BASE_URL || (window.location.origin.includes('http') ? window.location.origin : 'http://localhost:3001');
         const response = await fetch(baseUrl + '/api/request-pairing-code', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -540,17 +540,29 @@
         });
         const res = await response.json();
         
-        let code = 'EF' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.floor(1000 + Math.random() * 9000);
+        let code = '';
         if (res && res.pairingCode) {
           code = res.pairingCode;
+        } else {
+          // 8-character fallback format (4 chars - 4 chars)
+          const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+          let p1 = '', p2 = '';
+          for(let i=0; i<4; i++) p1 += chars.charAt(Math.floor(Math.random() * chars.length));
+          for(let i=0; i<4; i++) p2 += chars.charAt(Math.floor(Math.random() * chars.length));
+          code = p1 + '-' + p2;
         }
 
         document.getElementById('generatedPairingCode').innerText = code;
         document.getElementById('codeHintText').innerText = code;
         document.getElementById('pairingCodeDisplayContainer').classList.remove('hidden');
       } catch (err) {
-        // Fallback for standalone demo mode
-        const code = 'EF' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.floor(1000 + Math.random() * 9000);
+        // 8-character fallback format (4 chars - 4 chars)
+        const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+        let p1 = '', p2 = '';
+        for(let i=0; i<4; i++) p1 += chars.charAt(Math.floor(Math.random() * chars.length));
+        for(let i=0; i<4; i++) p2 += chars.charAt(Math.floor(Math.random() * chars.length));
+        const code = p1 + '-' + p2;
+
         document.getElementById('generatedPairingCode').innerText = code;
         document.getElementById('codeHintText').innerText = code;
         document.getElementById('pairingCodeDisplayContainer').classList.remove('hidden');
