@@ -924,14 +924,59 @@
       bar.style.height = (btnRect.height - 6) + 'px';
     }
 
+    async function syncBackendContacts() {
+      try {
+        const baseUrl = getApiBaseUrl();
+        const response = await fetch(baseUrl + '/api/contacts');
+        const data = await response.json();
+        
+        if (Array.isArray(data) && data.length > 0) {
+          const existingPhones = new Set(userContacts.map(c => c.phone));
+          let syncedCount = 0;
+
+          data.forEach((item, idx) => {
+            const rawPhone = (item.phone || item.phone_number || item.formatted_phone || '').replace(/[^0-9]/g, '');
+            const rawName = (item.name || item.saved_name || item.public_name || 'Contato Sem Nome').trim();
+            
+            if (rawPhone && rawPhone.length >= 8 && !existingPhones.has(rawPhone)) {
+              let cat = 'GERAL';
+              const upperName = rawName.toUpperCase();
+              if (upperName.includes('CTH')) cat = 'CTH';
+              else if (upperName.includes('LEAD')) cat = 'LEAD';
+              else if (upperName.includes('PT')) cat = 'PT';
+
+              userContacts.push({
+                id: 'c_sync_' + idx + '_' + rawPhone,
+                name: rawName,
+                phone: rawPhone,
+                category: cat
+              });
+              existingPhones.add(rawPhone);
+              syncedCount++;
+            }
+          });
+
+          if (syncedCount > 0) {
+            saveUserContacts();
+            console.log(`✅ ${syncedCount} contatos sincronizados do backend com sucesso!`);
+          }
+        }
+      } catch (err) {
+        console.warn('Backend contacts sync unavailable:', err.message);
+      }
+    }
+
     function loadUserData() {
       const savedContacts = localStorage.getItem('eduflow_contacts_' + currentUser.email);
-      userContacts = savedContacts ? JSON.parse(savedContacts) : DEFAULT_CONTACTS;
+      userContacts = savedContacts ? JSON.parse(savedContacts) : [];
       
       renderContactsTable();
       renderQuickTemplates();
       renderDispatchesHistory();
       initDatePickers();
+
+      // Auto-sync base of 763 contacts from backend server
+      syncBackendContacts();
     }
 
     function saveUserContacts() {
@@ -1032,30 +1077,85 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const text = e.target.result;
-        const lines = text.split('\n');
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+        if (lines.length === 0) return alert('O arquivo CSV está vazio.');
+
         let addedCount = 0;
+        const existingPhones = new Set(userContacts.map(c => c.phone));
 
-        lines.forEach(line => {
-          const parts = line.split(',');
-          if (parts.length >= 2) {
-            const name = parts[0].trim().replace(/^"/, '').replace(/"$/, '');
-            const phone = parts[1].trim().replace(/[^0-9]/g, '');
-            const category = parts[2] ? parts[2].trim().toUpperCase() : 'GERAL';
+        // Smart Header Detection
+        const firstLine = lines[0].toLowerCase();
+        let nameColIdx = -1;
+        let phoneColIdx = -1;
+        let catColIdx = -1;
 
-            if (name && phone && phone.length >= 8) {
-              userContacts.push({
-                id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                name,
-                phone,
-                category
-              });
-              addedCount++;
+        if (firstLine.includes('saved_name') || firstLine.includes('phone_number') || firstLine.includes('nome') || firstLine.includes('phone') || firstLine.includes('name') || firstLine.includes('celular') || firstLine.includes('telefone')) {
+          const headers = firstLine.split(',').map(h => h.trim().replace(/^"/, '').replace(/"$/, ''));
+          
+          headers.forEach((h, idx) => {
+            if (['saved_name', 'public_name', 'name', 'nome', 'display_name', 'contato'].includes(h)) {
+              if (nameColIdx === -1 || h === 'saved_name' || h === 'nome') nameColIdx = idx;
             }
+            if (['phone_number', 'phone', 'formatted_phone', 'celular', 'telefone', 'mobile', 'number'].includes(h)) {
+              if (phoneColIdx === -1 || h === 'phone_number' || h === 'telefone') phoneColIdx = idx;
+            }
+            if (['category', 'labels', 'categoria', 'group'].includes(h)) {
+              catColIdx = idx;
+            }
+          });
+        }
+
+        const startRow = (nameColIdx !== -1 && phoneColIdx !== -1) ? 1 : 0;
+
+        for (let i = startRow; i < lines.length; i++) {
+          const rawLine = lines[i];
+          const parts = rawLine.split(',');
+          const cleanParts = parts.map(p => p.trim().replace(/^"/, '').replace(/"$/, ''));
+
+          let name = '';
+          let phone = '';
+          let category = 'GERAL';
+
+          if (nameColIdx !== -1 && phoneColIdx !== -1) {
+            name = cleanParts[nameColIdx] || '';
+            phone = (cleanParts[phoneColIdx] || '').replace(/[^0-9]/g, '');
+            if (catColIdx !== -1 && cleanParts[catColIdx]) {
+              category = cleanParts[catColIdx].toUpperCase();
+            }
+          } else {
+            // Auto-detect columns by value pattern
+            cleanParts.forEach(part => {
+              const digits = part.replace(/[^0-9]/g, '');
+              if (digits.length >= 8 && !phone) {
+                phone = digits;
+              } else if (part.length > 1 && !name && part.toLowerCase() !== 'true' && part.toLowerCase() !== 'false') {
+                name = part;
+              }
+            });
           }
-        });
+
+          // Auto-classify category from contact name
+          if (name) {
+            const upperName = name.toUpperCase();
+            if (upperName.includes('CTH')) category = 'CTH';
+            else if (upperName.includes('LEAD')) category = 'LEAD';
+            else if (upperName.includes('PT')) category = 'PT';
+          }
+
+          if (name && phone && phone.length >= 8 && !existingPhones.has(phone)) {
+            userContacts.push({
+              id: 'c_csv_' + Date.now() + '_' + i,
+              name,
+              phone,
+              category
+            });
+            existingPhones.add(phone);
+            addedCount++;
+          }
+        }
 
         saveUserContacts();
-        alert(`${addedCount} contatos importados do arquivo CSV com sucesso!`);
+        alert(`✅ ${addedCount} contatos importados do arquivo CSV com sucesso! Total na sua base: ${userContacts.length}`);
       };
       reader.readAsText(file);
     }
