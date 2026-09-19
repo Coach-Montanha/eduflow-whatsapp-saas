@@ -12,9 +12,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Tailwind CSS & Lucide Icons -->
+  <!-- Tailwind CSS & Lucide Icons & Ecosystem Auth -->
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="/ecosystem-auth-service.js"></script>
 
   <style>
     :root {
@@ -1092,14 +1093,34 @@
       }
     }
 
-    function handleAuthSubmit(e) {
+    async function handleAuthSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value;
+      if (window.EcosystemAuthService) {
+        const mx = await window.EcosystemAuthService.validateEmailMx(email);
+        if (!mx.valid) {
+          alert(mx.reason || 'E-mail inválido.');
+          return;
+        }
+        const access = await window.EcosystemAuthService.checkProjectAccess(null, 'whatsapp-lovable', email);
+        if (!access.hasAccess) {
+          alert(access.message || 'Acesso negado para este aplicativo.');
+          return;
+        }
+      }
       loginUser(email);
     }
 
-    function quickDemoLogin() {
-      loginUser('demo@eduflow.app');
+    async function quickDemoLogin() {
+      const email = 'demo@eduflow.app';
+      if (window.EcosystemAuthService) {
+        const lockout = await window.EcosystemAuthService.checkAndLockGuestDemo(email);
+        if (lockout.locked && !lockout.allowed) {
+          alert(lockout.message);
+          return;
+        }
+      }
+      loginUser(email);
     }
 
     function loginUser(email) {
