@@ -42,53 +42,258 @@
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen pb-20 md:pb-6 select-none font-sans">
 
   <!-- ==================================================================== -->
+  <!-- 0. ECOSYSTEM SPLASH SCREEN (INSTANT FIRST PAINT) -->
+  <!-- ==================================================================== -->
+  <style>
+    #app-preloader {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 999999;
+      background-color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    #app-preloader.preloader-hidden {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      display: none !important;
+    }
+    .preloader-emblem-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #4c1d95 0%, #0f172a 100%);
+      border: 2px solid rgba(168, 85, 247, 0.4);
+      box-shadow: 0 0 35px rgba(168, 85, 247, 0.35), inset 0 0 15px rgba(168, 85, 247, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: preloaderPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .preloader-aura-ring {
+      position: absolute;
+      inset: -6px;
+      border-radius: 34px;
+      border: 1.5px solid rgba(168, 85, 247, 0.25);
+      animation: auraExpand 2.5s linear infinite;
+    }
+    .preloader-title {
+      margin-top: 22px;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+      text-align: center;
+    }
+    .preloader-title span {
+      color: #a855f7;
+    }
+    .preloader-subtitle {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      text-align: center;
+      max-width: 380px;
+      padding: 0 16px;
+    }
+    .preloader-spinner {
+      margin-top: 24px;
+      width: 26px;
+      height: 26px;
+      border: 3px solid rgba(168, 85, 247, 0.15);
+      border-top-color: #a855f7;
+      border-radius: 50%;
+      animation: preloaderSpin 0.75s linear infinite;
+    }
+    @keyframes preloaderPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 35px rgba(168, 85, 247, 0.35); }
+      50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(168, 85, 247, 0.55); }
+    }
+    @keyframes auraExpand {
+      0% { opacity: 0.8; transform: scale(0.95); }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+    @keyframes preloaderSpin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <div id="app-preloader" aria-label="Carregando Montanha WhatsApp Automation...">
+    <div className="preloader-emblem-wrap">
+      <div className="preloader-aura-ring"></div>
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </div>
+    <div className="preloader-title">Montanha <span>WhatsApp Automation</span></div>
+    <div className="preloader-subtitle">Automação SaaS Multi-Tenant, CRM &amp; Disparos Inteligentes via WhatsApp</div>
+    <div className="preloader-spinner"></div>
+  </div>
+
+  <script>
+    (function(){
+      function dismiss(){
+        var p = document.getElementById('app-preloader');
+        if(p){
+          p.classList.add('preloader-hidden');
+          p.style.display = 'none';
+        }
+      }
+      if (document.readyState === 'complete') {
+        setTimeout(dismiss, 100);
+      } else {
+        window.addEventListener('load', function(){ setTimeout(dismiss, 100); });
+        setTimeout(dismiss, 600);
+      }
+    })();
+  </script>
+
+  <!-- ==================================================================== -->
   <!-- 1. AUTH SCREEN (LOGIN / CADASTRO) -->
   <!-- ==================================================================== -->
-  <div id="authScreen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-md w-full p-8 shadow-2xl space-y-6">
+  <div id="authScreen" class="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-950 text-slate-100 font-sans relative overflow-hidden">
+    <div aria-hidden class="pointer-events-none absolute inset-0 -z-10">
+      <div class="absolute -left-32 -top-32 h-[520px] w-[520px] rounded-full bg-purple-500/20 blur-[130px]"></div>
+      <div class="absolute -bottom-40 -right-32 h-[560px] w-[560px] rounded-full bg-cyan-600/15 blur-[150px]"></div>
+    </div>
+
+    <div class="bg-slate-950/90 border border-purple-500/40 rounded-2xl max-w-md w-full p-8 shadow-[0_0_50px_rgba(168,85,247,0.2)] backdrop-blur-2xl space-y-6">
       <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-cyan-500 mx-auto flex items-center justify-center text-white font-black text-3xl shadow-lg">
-          MW
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-cyan-500 mx-auto flex items-center justify-center text-white font-black text-3xl shadow-lg shadow-purple-500/30">
+          WA
         </div>
         <h1 class="text-2xl font-extrabold tracking-tight text-white">Montanha WhatsApp Automation</h1>
-        <p class="text-xs text-[var(--muted-foreground)]">Automação SaaS Multi-Tenant, CRM & Disparos Inteligentes via WhatsApp</p>
+        <p class="text-xs text-slate-400">Automação SaaS Multi-Tenant, CRM &amp; Disparos Inteligentes via WhatsApp</p>
+
+        <div class="pt-1">
+          <button type="button" onclick="toggleEcosystemBar()" class="text-xs text-purple-400 hover:text-purple-300 font-bold inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 transition-all cursor-pointer">
+            <span>🌐 Ecossistema Montanha (5 Apps)</span>
+            <span id="ecoToggleIcon">▼</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ecosystem Apps Selector -->
+      <div id="ecosystemBar" class="hidden p-3.5 rounded-2xl bg-slate-900/95 border border-purple-500/40 shadow-2xl space-y-2">
+        <div class="text-[11px] font-bold text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
+          <span>✨ Plataformas Integradas do Ecossistema</span>
+        </div>
+        <div class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+          <div class="p-2 rounded-xl border text-xs flex items-center justify-between bg-purple-500/10 border-purple-500/50 text-white">
+            <div class="flex flex-col">
+              <span class="font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                Montanha WhatsApp Automation
+              </span>
+              <span class="text-[10px] text-slate-400">Automação Multi-Tenant &amp; Disparos WhatsApp</span>
+            </div>
+            <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full border bg-purple-500/20 text-purple-300 border-purple-500/40">ATUAL</span>
+          </div>
+
+          <div class="p-2 rounded-xl border text-xs flex items-center justify-between bg-slate-950/60 border-slate-800 text-slate-300">
+            <div class="flex flex-col">
+              <span class="font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                Montanha PDF Studio
+              </span>
+              <span class="text-[10px] text-slate-400">Diagramação Editorial &amp; Publicações com IA</span>
+            </div>
+            <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full border bg-amber-500/20 text-amber-300 border-amber-500/40">Diagramação</span>
+          </div>
+
+          <div class="p-2 rounded-xl border text-xs flex items-center justify-between bg-slate-950/60 border-slate-800 text-slate-300">
+            <div class="flex flex-col">
+              <span class="font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Montanha Personal Studio
+              </span>
+              <span class="text-[10px] text-slate-400">Gestão Financeira &amp; Inteligência para Studios</span>
+            </div>
+            <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">Finanças</span>
+          </div>
+
+          <div class="p-2 rounded-xl border text-xs flex items-center justify-between bg-slate-950/60 border-slate-800 text-slate-300">
+            <div class="flex flex-col">
+              <span class="font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                Montanha Hybrid Training
+              </span>
+              <span class="text-[10px] text-slate-400">Alta Performance &amp; Periodização de Treino</span>
+            </div>
+            <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full border bg-cyan-500/20 text-cyan-300 border-cyan-500/40">Treino</span>
+          </div>
+
+          <div class="p-2 rounded-xl border text-xs flex items-center justify-between bg-slate-950/60 border-slate-800 text-slate-300">
+            <div class="flex flex-col">
+              <span class="font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                Montanha Language AI
+              </span>
+              <span class="text-[10px] text-slate-400">Tutor de Idiomas com IA &amp; Treinos Diários</span>
+            </div>
+            <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full border bg-indigo-500/20 text-indigo-300 border-indigo-500/40">Idiomas</span>
+          </div>
+        </div>
       </div>
 
       <!-- Auth Toggle -->
-      <div class="flex rounded-xl bg-[var(--background)] p-1 border border-[var(--border)] text-xs">
-        <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-bold rounded-lg bg-purple-600 text-white transition">Entrar</button>
-        <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 font-bold rounded-lg text-[var(--muted-foreground)] hover:text-white transition">Cadastrar</button>
+      <div class="flex rounded-xl bg-slate-900/80 p-1 border border-slate-800 text-xs">
+        <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-bold rounded-lg bg-purple-600 text-white transition cursor-pointer">Entrar</button>
+        <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">Cadastrar</button>
       </div>
 
       <!-- Auth Form -->
       <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs">
         <div id="nameFieldContainer" class="hidden">
           <label class="block font-semibold mb-1 text-slate-300">Nome Completo</label>
-          <input type="text" id="authName" placeholder="Seu nome ou da sua empresa" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-white outline-none focus:border-purple-500">
+          <input type="text" id="authName" placeholder="Seu nome ou da sua empresa" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-purple-500">
         </div>
 
         <div>
           <label class="block font-semibold mb-1 text-slate-300">Email Comercial</label>
-          <input type="email" id="authEmail" required placeholder="seuemail@exemplo.com" value="demo@eduflow.app" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-white outline-none focus:border-purple-500">
+          <input type="email" id="authEmail" required placeholder="seuemail@exemplo.com" value="demo@eduflow.app" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-purple-500">
         </div>
 
         <div>
           <label class="block font-semibold mb-1 text-slate-300">Senha de Acesso</label>
-          <input type="password" id="authPassword" required value="123456" placeholder="••••••••" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-white outline-none focus:border-purple-500">
+          <input type="password" id="authPassword" required value="123456" placeholder="••••••••" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-purple-500">
         </div>
 
-        <button type="submit" id="authSubmitBtn" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition">
+        <button type="submit" id="authSubmitBtn" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition cursor-pointer">
           Entrar na Conta
         </button>
       </form>
 
-      <div class="text-center pt-2">
-        <button type="button" onclick="quickDemoLogin()" class="text-xs text-cyan-400 hover:underline font-semibold">
-          ⚡ Entrar como Convidado (Demo Instantânea)
+      <div class="text-center pt-2 border-t border-slate-800">
+        <button type="button" onclick="quickDemoLogin()" class="w-full py-2.5 px-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+          ⚡ Demo Instantânea / Acesso Rápido
         </button>
       </div>
     </div>
   </div>
+
+  <script>
+    function toggleEcosystemBar() {
+      var bar = document.getElementById('ecosystemBar');
+      var icon = document.getElementById('ecoToggleIcon');
+      if (bar) {
+        if (bar.classList.contains('hidden')) {
+          bar.classList.remove('hidden');
+          if (icon) icon.innerText = '▲';
+        } else {
+          bar.classList.add('hidden');
+          if (icon) icon.innerText = '▼';
+        }
+      }
+    }
+  </script>
 
   <!-- ==================================================================== -->
   <!-- 2. MAIN APP SHELL (PROTECTED) -->
