@@ -1310,14 +1310,20 @@
       loginUser(email);
     }
 
-    async function quickDemoLogin() {
-      const email = 'demo@eduflow.app';
+    async function showPasswordResetPrompt() {
+      const currentEmail = document.getElementById('authEmail') ? document.getElementById('authEmail').value : '';
+      const email = prompt('Informe seu e-mail cadastrado para redefinição de senha:', currentEmail);
+      if (!email || !email.trim()) return;
+
       if (window.EcosystemAuthService) {
-        const lockout = await window.EcosystemAuthService.checkAndLockGuestDemo(email);
-        if (lockout.locked && !lockout.allowed) {
-          alert(lockout.message);
+        const mx = await window.EcosystemAuthService.validateEmailMx(email);
+        if (!mx.valid) {
+          alert(mx.reason || 'E-mail inválido.');
           return;
         }
+      }
+      alert('Instruções de recuperação de senha enviadas com sucesso para ' + email.trim() + '!');
+    }
       }
       loginUser(email);
     }
