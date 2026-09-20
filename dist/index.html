@@ -42,6 +42,27 @@
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen pb-20 md:pb-6 select-none font-sans">
 
+  <!-- Impersonation Support Banner -->
+  <aside id="impersonationBanner" aria-label="Aviso de Modo Suporte Técnico" class="hidden sticky top-0 z-[9999] w-full bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-cyan-500/20 border-b border-amber-500/40 backdrop-blur-xl px-4 py-2 text-xs text-amber-200 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="p-1 rounded-lg bg-amber-500/30 text-amber-300">🛡️</span>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="font-extrabold uppercase tracking-wider text-[11px] text-amber-300">Modo Suporte Técnico:</span>
+          <span>Você está operando como</span>
+          <span id="impersonationEmailDisplay" class="font-mono font-bold text-white bg-slate-900/80 px-2 py-0.5 rounded border border-amber-500/30">user@email.com</span>
+          <span class="text-[10px] text-slate-400 hidden sm:inline">(Privilégios de SuperAdmin ativos)</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 rounded-full">✓ Sessão Ativa</span>
+        <button type="button" onclick="clearImpersonation()" class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/50 font-bold transition text-xs cursor-pointer">
+          Sair do modo suporte
+        </button>
+      </div>
+    </div>
+  </aside>
+
   <!-- ==================================================================== -->
   <!-- 0. ECOSYSTEM SPLASH SCREEN (INSTANT FIRST PAINT) -->
   <!-- ==================================================================== -->
@@ -356,6 +377,15 @@
           </button>
           <button onclick="switchTab('profile')" id="sideNavProfile" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
             <span>👤</span> Perfil
+          </button>
+          <button onclick="switchTab('eco')" id="sideNavEco" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
+            <span>🌐</span> Hub Ecossistema
+          </button>
+          <button onclick="switchTab('create')" id="sideNavCreate" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
+            <span>✨</span> Criar Mensagens IA
+          </button>
+          <button onclick="switchTab('boost')" id="sideNavBoost" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
+            <span>⚡</span> Acelerador Booster
           </button>
           <button onclick="switchTab('masteradmin')" id="sideNavMasteradmin" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-purple-300 hover:text-white hover:bg-purple-600/20 text-left transition-colors cursor-pointer mt-2 border border-purple-500/30 bg-purple-500/10">
             <span>👑</span> Painel Master
@@ -1039,6 +1069,269 @@
       </div>
     </section>
 
+    <!-- TAB CONTENT 7: ECOSYSTEM HUB (/eco) -->
+    <section id="tabContentEco" class="tab-page hidden space-y-6">
+      <div class="relative overflow-hidden rounded-3xl border border-purple-500/30 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950/40 p-6 md:p-8 shadow-2xl backdrop-blur-xl space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center rounded-full border border-purple-500/50 bg-purple-500/10 text-purple-300 text-xs font-bold uppercase tracking-wider px-3 py-1">
+            ✨ Ecossistema Montanha Hub
+          </span>
+          <span class="inline-flex items-center rounded-full border border-cyan-500/50 bg-cyan-500/10 text-cyan-300 text-xs font-bold uppercase tracking-wider px-3 py-1">
+            ⚡ Ruflo Eco Engine v2.5
+          </span>
+        </div>
+        <h2 class="text-2xl md:text-4xl font-black tracking-tight text-white">
+          Hub do Ecossistema <span class="text-purple-400">Montanha</span>
+        </h2>
+        <p class="text-xs md:text-sm text-slate-300 max-w-3xl leading-relaxed">
+          Central unificada dos 5 aplicativos. Alterne instantaneamente entre os módulos, monitore a economia de tokens do motor Ruflo e gerencie disparos e automações de alta escala.
+        </p>
+        <div class="flex flex-wrap gap-2.5 pt-2">
+          <button onclick="switchTab('create')" class="bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg transition cursor-pointer">
+            ✨ Criar Mensagens IA
+          </button>
+          <button onclick="switchTab('boost')" class="bg-slate-900 border border-purple-500/40 hover:bg-purple-500/10 text-purple-300 text-xs font-bold px-4 py-2 rounded-xl transition cursor-pointer">
+            ⚡ Acelerador Booster
+          </button>
+          <button onclick="switchTab('masteradmin')" class="bg-slate-900 border border-slate-700 hover:border-purple-500/50 text-white text-xs font-bold px-4 py-2 rounded-xl transition cursor-pointer">
+            👑 Painel Master SuperAdmin
+          </button>
+        </div>
+      </div>
+
+      <!-- Ruflo Eco Engine KPIs -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Economia de Tokens</span>
+            <span class="text-purple-400">⚡</span>
+          </div>
+          <div class="text-3xl font-extrabold text-purple-400">84.7%</div>
+          <span class="text-xs text-[var(--muted-foreground)]">Redução com Ruflo /eco</span>
+        </div>
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Cache de 0 Tokens</span>
+            <span class="text-cyan-400">💾</span>
+          </div>
+          <div class="text-3xl font-extrabold text-cyan-400">Ativo</div>
+          <span class="text-xs text-[var(--muted-foreground)]">Respostas prontas em cache local</span>
+        </div>
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Context Pruning</span>
+            <span class="text-emerald-400">✂️</span>
+          </div>
+          <div class="text-3xl font-extrabold text-emerald-400">4 Itens</div>
+          <span class="text-xs text-[var(--muted-foreground)]">Janela compactada por contato</span>
+        </div>
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-[var(--muted-foreground)]">
+            <span class="text-xs font-bold uppercase tracking-wider">Model Tiering</span>
+            <span class="text-amber-400">🤖</span>
+          </div>
+          <div class="text-3xl font-extrabold text-amber-400">Flash 2.5</div>
+          <span class="text-xs text-[var(--muted-foreground)]">Lite para texto, Flash para CRM</span>
+        </div>
+      </div>
+
+      <!-- 5 Apps Grid -->
+      <div class="space-y-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>🌐</span> Aplicativos do Ecossistema Montanha
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="bg-[var(--card)] border-2 border-purple-500/50 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-2xl">📱</span>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-purple-500/40 bg-purple-500/20 text-purple-300">App Atual</span>
+              </div>
+              <h4 class="font-extrabold text-white text-sm">Montanha WhatsApp Automation</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">Automação SaaS multi-tenant, CRM e disparos inteligentes via WhatsApp.</p>
+            </div>
+            <button onclick="switchTab('dashboard')" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold py-2 rounded-xl transition cursor-pointer">
+              Acessar Painel
+            </button>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-2xl">🏋️</span>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-cyan-500/40 bg-cyan-500/20 text-cyan-300">Treinamento</span>
+              </div>
+              <h4 class="font-extrabold text-white text-sm">Montanha Hybrid Training</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">Alta performance para atletas híbridos, endurance, musculação, LPO e periodização com IA.</p>
+            </div>
+            <a href="http://localhost:5173/eco" target="_blank" class="w-full block text-center bg-slate-900 border border-slate-700 hover:border-cyan-500/50 text-white text-xs font-bold py-2 rounded-xl transition">
+              Abrir Módulo ↗
+            </a>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-2xl">💰</span>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 text-emerald-300">Finanças</span>
+              </div>
+              <h4 class="font-extrabold text-white text-sm">Montanha Personal Studio</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">Gestão financeira para personais, controle de alunos, cobranças recorrentes e contratos.</p>
+            </div>
+            <a href="http://localhost:5173/eco" target="_blank" class="w-full block text-center bg-slate-900 border border-slate-700 hover:border-emerald-500/50 text-white text-xs font-bold py-2 rounded-xl transition">
+              Abrir Módulo ↗
+            </a>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-2xl">🗣️</span>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-indigo-500/40 bg-indigo-500/20 text-indigo-300">Idiomas</span>
+              </div>
+              <h4 class="font-extrabold text-white text-sm">Montanha Language AI</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">Tutor inteligente de idiomas com IA, microtreinos de 5 minutos e fluência acelerada.</p>
+            </div>
+            <a href="http://localhost:5174/eco" target="_blank" class="w-full block text-center bg-slate-900 border border-slate-700 hover:border-indigo-500/50 text-white text-xs font-bold py-2 rounded-xl transition">
+              Abrir Módulo ↗
+            </a>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-2xl">📄</span>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/20 text-amber-300">Editorial</span>
+              </div>
+              <h4 class="font-extrabold text-white text-sm">Montanha PDF Studio</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">Diagramação de fichas de treino, relatórios e e-books no padrão editorial suíço.</p>
+            </div>
+            <a href="http://localhost:5175/eco" target="_blank" class="w-full block text-center bg-slate-900 border border-slate-700 hover:border-amber-500/50 text-white text-xs font-bold py-2 rounded-xl transition">
+              Abrir Módulo ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB CONTENT 8: CREATE MESSAGES & CAMPAIGNS (/create) -->
+    <section id="tabContentCreate" class="tab-page hidden space-y-6">
+      <div class="relative overflow-hidden rounded-3xl border border-purple-500/30 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950/40 p-6 md:p-8 shadow-2xl backdrop-blur-xl space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center rounded-full border border-purple-500/50 bg-purple-500/10 text-purple-300 text-xs font-bold uppercase tracking-wider px-3 py-1">
+            ✨ Estúdio de Criação com IA
+          </span>
+          <span class="inline-flex items-center rounded-full border border-cyan-500/50 bg-cyan-500/10 text-cyan-300 text-xs font-bold uppercase tracking-wider px-3 py-1">
+            ✉️ Disparos Inteligentes WhatsApp
+          </span>
+        </div>
+        <h2 class="text-2xl md:text-4xl font-black tracking-tight text-white">
+          Criação de <span class="text-purple-400">Mensagens &amp; Campanhas</span>
+        </h2>
+        <p class="text-xs md:text-sm text-slate-300 max-w-3xl leading-relaxed">
+          Gere mensagens de alta conversão para alunos e leads com IA. Modelos otimizados com tags personalizadas ({nome}, {turma}, {vencimento}).
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4 shadow-xl">
+          <h3 class="font-bold text-base text-white border-b border-[var(--border)] pb-3">
+            Gerador com IA de Notificações WhatsApp
+          </h3>
+          <div class="space-y-4 text-xs">
+            <div>
+              <label class="block font-semibold mb-1 text-slate-300">Objetivo da Mensagem:</label>
+              <select id="createCampaignGoal" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
+                <option value="cth_treino">🏋️ Aviso de Treino do Dia (Turma CTH Híbrido)</option>
+                <option value="cobranca_pix">💰 Lembrete de Renovação com Chave Pix</option>
+                <option value="lead_convite">🚀 Convite de Acesso Gratuito para Leads</option>
+                <option value="parabenizacao">🏆 Parabéns pela Semana de Treinos Concluída</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold mb-1 text-slate-300">Tom de Voz:</label>
+              <select id="createCampaignTone" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
+                <option value="motivacional">🔥 Motivacional &amp; Enérgico (Coach Montanha)</option>
+                <option value="formal">📋 Profissional &amp; Direto</option>
+                <option value="amigavel">🤝 Amigável &amp; Descontraído</option>
+              </select>
+            </div>
+            <button type="button" onclick="generateAiCampaignText()" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-2.5 rounded-xl shadow-lg transition cursor-pointer">
+              ✨ Gerar Mensagem com IA
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4 shadow-xl flex flex-col justify-between">
+          <div class="space-y-3">
+            <h3 class="font-bold text-base text-white border-b border-[var(--border)] pb-3">
+              Prévia da Mensagem Gerada
+            </h3>
+            <textarea id="createMessagePreview" rows="7" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-xs text-white outline-none focus:border-purple-500 font-mono leading-relaxed" placeholder="A mensagem gerada pela IA aparecerá aqui..."></textarea>
+          </div>
+          <button type="button" onclick="applyGeneratedMessageToDispatch()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl transition cursor-pointer">
+            ✉️ Usar no Disparador WhatsApp
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB CONTENT 9: BOOST ACCELERATOR (/boost) -->
+    <section id="tabContentBoost" class="tab-page hidden space-y-6">
+      <div class="relative overflow-hidden rounded-3xl border border-purple-500/30 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950/40 p-6 md:p-8 shadow-2xl backdrop-blur-xl space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center rounded-full border border-purple-500/50 bg-purple-500/10 text-purple-300 text-xs font-bold uppercase tracking-wider px-3 py-1">
+            ⚡ Acelerador Booster WhatsApp
+          </span>
+          <span class="inline-flex items-center rounded-full border border-emerald-500/50 bg-emerald-500/10 text-emerald-300 text-xs font-bold uppercase tracking-wider px-3 py-1">
+            🛡️ Proteção Anti-Ban &amp; Warmup
+          </span>
+        </div>
+        <h2 class="text-2xl md:text-4xl font-black tracking-tight text-white">
+          Performance <span class="text-purple-400">Booster</span>
+        </h2>
+        <p class="text-xs md:text-sm text-slate-300 max-w-3xl leading-relaxed">
+          Acelere sua cadência de disparos com segurança: aquecimento de chip inteligente, delays randômicos e balanceamento de conexões Baileys.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-2">
+          <span class="text-[10px] font-bold uppercase text-[var(--muted-foreground)]">Taxa de Entrega Média</span>
+          <div class="text-3xl font-extrabold text-emerald-400">98.4%</div>
+          <span class="text-xs text-emerald-300 font-medium">✓ Sem bloqueios ou rejeição</span>
+        </div>
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-2">
+          <span class="text-[10px] font-bold uppercase text-[var(--muted-foreground)]">Aquecimento de Chip (Warmup)</span>
+          <div class="text-3xl font-extrabold text-cyan-400">Ativo</div>
+          <span class="text-xs text-cyan-300 font-medium">Intervalos randômicos de 15 a 45s</span>
+        </div>
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-2">
+          <span class="text-[10px] font-bold uppercase text-[var(--muted-foreground)]">Multi-Tenant Routing</span>
+          <div class="text-3xl font-extrabold text-purple-400">5 Apps</div>
+          <span class="text-xs text-purple-300 font-medium">Sessões isoladas por aplicativo</span>
+        </div>
+      </div>
+
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
+        <h3 class="font-bold text-base text-white border-b border-[var(--border)] pb-3">
+          Configurações de Proteção &amp; Aceleração
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
+            <span class="font-bold text-white block">Intervalo Randômico entre Envios</span>
+            <p class="text-slate-400 text-[11px]">Varia automaticamente entre 15s e 40s para simular digitação humana natural e evitar bloqueios da Meta.</p>
+            <span class="text-emerald-400 font-bold block text-[10px]">STATUS: ATIVO</span>
+          </div>
+          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
+            <span class="font-bold text-white block">Compressão Automática de Vídeos &amp; Imagens</span>
+            <p class="text-slate-400 text-[11px]">Garante que anexos (brag.mp4, contact-sheet.jpg) sejam transmitidos em alta velocidade.</p>
+            <span class="text-cyan-400 font-bold block text-[10px]">STATUS: ATIVO</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
   <!-- ==================================================================== -->
   <!-- JAVASCRIPT APP ENGINE -->
   <!-- ==================================================================== -->
@@ -1357,7 +1650,7 @@
       const activePage = document.getElementById('tabContent' + tabId.charAt(0).toUpperCase() + tabId.slice(1));
       if (activePage) activePage.classList.remove('hidden');
 
-      const tabs = ['Dash', 'Contacts', 'Dispatch', 'Qrcode', 'Profile', 'Masteradmin'];
+      const tabs = ['Dash', 'Contacts', 'Dispatch', 'Qrcode', 'Profile', 'Masteradmin', 'Eco', 'Create', 'Boost'];
       tabs.forEach(t => {
         const btn = document.getElementById('nav' + t);
         if (btn) {
@@ -1378,6 +1671,10 @@
         }
       });
 
+      try {
+        window.location.hash = '#/' + tabId.toLowerCase();
+      } catch(e) {}
+
       updateSpotlightBar(tabId);
     }
 
@@ -1390,7 +1687,11 @@
         contacts: 'sideNavContacts',
         dispatch: 'sideNavDispatch',
         qrcode: 'sideNavQrcode',
-        profile: 'sideNavProfile'
+        profile: 'sideNavProfile',
+        masteradmin: 'sideNavMasteradmin',
+        eco: 'sideNavEco',
+        create: 'sideNavCreate',
+        boost: 'sideNavBoost'
       };
       const activeBtn = document.getElementById(tabMap[tabId.toLowerCase()]);
       if (!activeBtn) return;
@@ -1399,6 +1700,72 @@
       bar.style.top = (btnRect.top - navRect.top + 3) + 'px';
       bar.style.height = (btnRect.height - 6) + 'px';
     }
+
+    function generateAiCampaignText() {
+      const goal = document.getElementById('createCampaignGoal').value;
+      let msg = '';
+      if (goal === 'cth_treino') {
+        msg = '🏋️ *TREINO DO DIA LIBERADO — TURMA CTH* ⚡\n\nFala guerreiro(a)! O microciclo de hoje já está disponível no seu app *Montanha Hybrid Training*.\n\nFoco total na intensidade e controle de carga. Nos vemos no ranking!\n\n_Bons treinos, Coach Montanha_';
+      } else if (goal === 'cobranca_pix') {
+        msg = '💰 *LEMBRETE DE RENOVAÇÃO DO STUDIO* ✨\n\nOlá {nome}! Sua assinatura mensal do Studio vence em breve.\n\nPara garantir a continuidade dos seus treinos sem interrupção no app, faça seu Pix utilizando a chave cadastrada.\n\nQualquer dúvida estamos à disposição!';
+      } else if (goal === 'lead_convite') {
+        msg = '🚀 *CONVITE EXCLUSIVO — ECOSSISTEMA MONTANHA* 🎯\n\nOlá {nome}! Liberamos um acesso experimental de 7 dias na nossa plataforma de Alta Performance.\n\nVenha conhecer nossa metodologia híbrida e acelerar seus resultados. Responda SIM para ativar agora!';
+      } else {
+        msg = '🏆 *PARABÉNS PELA SEMANA DE TREINOS!* 🔥\n\nParabéns {nome}! Você completou 100% da sua meta semanal de treinos.\n\nA consistência é a chave para a verdadeira evolução. Continue firme!';
+      }
+      document.getElementById('createMessagePreview').value = msg;
+    }
+
+    function applyGeneratedMessageToDispatch() {
+      const text = document.getElementById('createMessagePreview').value;
+      if (!text) {
+        alert('Gere ou digite uma mensagem antes de aplicar ao disparador.');
+        return;
+      }
+      document.getElementById('messageText').value = text;
+      switchTab('dispatch');
+    }
+
+    function clearImpersonation() {
+      localStorage.removeItem('montanha_impersonate');
+      const url = new URL(window.location.href);
+      url.searchParams.delete('impersonate');
+      window.location.href = url.pathname + (url.search ? url.search : '') + url.hash;
+    }
+
+    function checkImpersonation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let email = urlParams.get('impersonate');
+      if (email && email.trim()) {
+        email = email.trim().toLowerCase();
+        localStorage.setItem('montanha_impersonate', email);
+      } else {
+        email = localStorage.getItem('montanha_impersonate');
+      }
+
+      const banner = document.getElementById('impersonationBanner');
+      const emailDisp = document.getElementById('impersonationEmailDisplay');
+      if (email && banner) {
+        if (emailDisp) emailDisp.innerText = email;
+        banner.classList.remove('hidden');
+        if (!currentUser) {
+          loginUser(email);
+        }
+      }
+    }
+
+    function handleHashRouting() {
+      const hash = (window.location.hash || '').toLowerCase().replace(/^[#/]+/, '');
+      if (['eco', 'create', 'boost', 'masteradmin', 'dashboard', 'contacts', 'dispatch', 'qrcode', 'profile'].includes(hash)) {
+        if (!currentUser) {
+          const user = localStorage.getItem('montanha_impersonate') || 'demo@eduflow.app';
+          loginUser(user);
+        }
+        switchTab(hash);
+      }
+    }
+
+    window.addEventListener('hashchange', handleHashRouting);
 
     async function syncBackendContacts() {
       try {
@@ -1866,6 +2233,9 @@
     if (savedUser) {
       loginUser(savedUser);
     }
+
+    checkImpersonation();
+    handleHashRouting();
   </script>
 </body>
 </html>
