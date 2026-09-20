@@ -1164,7 +1164,7 @@
               <h4 class="font-extrabold text-white text-sm">Montanha Hybrid Training</h4>
               <p class="text-xs text-slate-300 leading-relaxed">Alta performance para atletas híbridos, endurance, musculação, LPO e periodização com IA.</p>
             </div>
-            <a href="http://localhost:5173/eco" target="_blank" class="w-full block text-center bg-slate-900 border border-slate-700 hover:border-cyan-500/50 text-white text-xs font-bold py-2 rounded-xl transition">
+            <a href="http://localhost:5176/eco" target="_blank" class="w-full block text-center bg-slate-900 border border-slate-700 hover:border-cyan-500/50 text-white text-xs font-bold py-2 rounded-xl transition">
               Abrir Módulo ↗
             </a>
           </div>
@@ -1730,12 +1730,27 @@
       localStorage.removeItem('montanha_impersonate');
       const url = new URL(window.location.href);
       url.searchParams.delete('impersonate');
-      window.location.href = url.pathname + (url.search ? url.search : '') + url.hash;
+      let hash = window.location.hash || '';
+      if (hash.includes('impersonate=')) {
+        const [hPath, hQuery] = hash.split('?');
+        const hParams = new URLSearchParams(hQuery);
+        hParams.delete('impersonate');
+        const newHQuery = hParams.toString();
+        hash = hPath + (newHQuery ? '?' + newHQuery : '');
+      }
+      window.location.href = url.pathname + (url.search ? url.search : '') + hash;
     }
 
     function checkImpersonation() {
       const urlParams = new URLSearchParams(window.location.search);
       let email = urlParams.get('impersonate');
+
+      if (!email && window.location.hash.includes('?')) {
+        const hashQuery = window.location.hash.split('?')[1];
+        const hashParams = new URLSearchParams(hashQuery);
+        email = hashParams.get('impersonate');
+      }
+
       if (email && email.trim()) {
         email = email.trim().toLowerCase();
         localStorage.setItem('montanha_impersonate', email);
@@ -1751,11 +1766,15 @@
         if (!currentUser) {
           loginUser(email);
         }
+      } else if (banner) {
+        banner.classList.add('hidden');
       }
     }
 
     function handleHashRouting() {
-      const hash = (window.location.hash || '').toLowerCase().replace(/^[#/]+/, '');
+      checkImpersonation();
+      const rawHash = (window.location.hash || '').toLowerCase().replace(/^[#/]+/, '');
+      const hash = rawHash.split('?')[0];
       if (['eco', 'create', 'boost', 'masteradmin', 'dashboard', 'contacts', 'dispatch', 'qrcode', 'profile'].includes(hash)) {
         if (!currentUser) {
           const user = localStorage.getItem('montanha_impersonate') || 'demo@eduflow.app';
