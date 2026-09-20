@@ -4,8 +4,14 @@ import { existsSync } from 'node:fs'
 const outputDirectory = new URL('../dist/', import.meta.url)
 const projectRoot = new URL('../', import.meta.url)
 
+const publicDirectory = new URL('../public/', import.meta.url)
+
 await rm(outputDirectory, { recursive: true, force: true })
 await mkdir(outputDirectory, { recursive: true })
+
+if (existsSync(publicDirectory)) {
+  await cp(publicDirectory, outputDirectory, { recursive: true })
+}
 
 const files = ['index.html', 'capacitor.config.json', 'manifest.json', 'service-worker.js']
 

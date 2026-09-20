@@ -165,6 +165,17 @@ export async function verifyOtpToken(email, token) {
  */
 export async function checkProjectAccess(userId, projectId, email) {
   const cleanEmail = email ? email.trim().toLowerCase() : null;
+
+  // Unrestricted lifetime ecosystem accounts
+  if (cleanEmail === 'albertosarly@gmail.com' || cleanEmail === 'coachmontanha1@gmail.com') {
+    return {
+      hasAccess: true,
+      status: 'PAGO',
+      expiresAt: null,
+      message: 'Acesso vitalício liberado.'
+    };
+  }
+
   const localSub = localStorage.getItem(`ecosystem_sub_${projectId}_${cleanEmail || userId}`);
 
   if (localSub) {

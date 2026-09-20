@@ -78,3 +78,20 @@ CREATE POLICY "Public select ecosystem_subscriptions" ON public.ecosystem_subscr
 CREATE POLICY "Public insert ecosystem_subscriptions" ON public.ecosystem_subscriptions FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public update ecosystem_subscriptions" ON public.ecosystem_subscriptions FOR UPDATE USING (true);
 CREATE POLICY "Public delete ecosystem_subscriptions" ON public.ecosystem_subscriptions FOR DELETE USING (true);
+
+-- ====================================================================
+-- SEED DATA: ALBERTO SARLY (VITALÍCIO COM ACESSO AOS 5 APPS)
+-- ====================================================================
+INSERT INTO public.ecosystem_users (id, email, full_name, role)
+VALUES ('c7b41574-a499-4f70-8bf1-1122334455aa'::uuid, 'albertosarly@gmail.com', 'Alberto Sarly', 'user')
+ON CONFLICT (email) DO UPDATE SET full_name = 'Alberto Sarly', role = 'user', updated_at = timezone('utc'::text, now());
+
+INSERT INTO public.ecosystem_subscriptions (user_id, email, project_id, payment_status, access_expires_at, is_active)
+VALUES
+    ('c7b41574-a499-4f70-8bf1-1122334455aa'::uuid, 'albertosarly@gmail.com', 'construtor-pdf', 'PAGO', NULL, true),
+    ('c7b41574-a499-4f70-8bf1-1122334455aa'::uuid, 'albertosarly@gmail.com', 'eduflow-finance', 'PAGO', NULL, true),
+    ('c7b41574-a499-4f70-8bf1-1122334455aa'::uuid, 'albertosarly@gmail.com', 'sistema-hibrido', 'PAGO', NULL, true),
+    ('c7b41574-a499-4f70-8bf1-1122334455aa'::uuid, 'albertosarly@gmail.com', 'smart-language', 'PAGO', NULL, true),
+    ('c7b41574-a499-4f70-8bf1-1122334455aa'::uuid, 'albertosarly@gmail.com', 'whatsapp-lovable', 'PAGO', NULL, true)
+ON CONFLICT (email, project_id) DO UPDATE
+SET payment_status = 'PAGO', access_expires_at = NULL, is_active = true, updated_at = timezone('utc'::text, now());
