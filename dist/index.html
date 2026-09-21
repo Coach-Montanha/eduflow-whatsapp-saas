@@ -375,20 +375,8 @@
           <button onclick="switchTab('qrcode')" id="sideNavQrcode" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
             <span>📱</span> QR Code
           </button>
-          <button onclick="switchTab('profile')" id="sideNavProfile" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
-            <span>👤</span> Perfil
-          </button>
-          <button onclick="switchTab('eco')" id="sideNavEco" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
-            <span>🌐</span> Hub Ecossistema
-          </button>
           <button onclick="switchTab('create')" id="sideNavCreate" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
             <span>✨</span> Criar Mensagens IA
-          </button>
-          <button onclick="switchTab('boost')" id="sideNavBoost" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[var(--muted-foreground)] hover:text-white hover:bg-slate-800/50 text-left transition-colors cursor-pointer">
-            <span>⚡</span> Acelerador Booster
-          </button>
-          <button onclick="switchTab('masteradmin')" id="sideNavMasteradmin" class="side-nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-purple-300 hover:text-white hover:bg-purple-600/20 text-left transition-colors cursor-pointer mt-2 border border-purple-500/30 bg-purple-500/10">
-            <span>👑</span> Painel Master
           </button>
         </div>
       </aside>
@@ -1235,29 +1223,79 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4 shadow-xl">
-          <h3 class="font-bold text-base text-white border-b border-[var(--border)] pb-3">
-            Gerador com IA de Notificações WhatsApp
-          </h3>
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+            <h3 class="font-bold text-base text-white flex items-center gap-2">
+              <span>✨</span> Gerador com IA de Notificações WhatsApp
+            </h3>
+            <span class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-full font-mono">PROMPT LIVRE</span>
+          </div>
+
           <div class="space-y-4 text-xs">
             <div>
-              <label class="block font-semibold mb-1 text-slate-300">Objetivo da Mensagem:</label>
-              <select id="createCampaignGoal" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
-                <option value="cth_treino">🏋️ Aviso de Treino do Dia (Turma CTH Híbrido)</option>
-                <option value="cobranca_pix">💰 Lembrete de Renovação com Chave Pix</option>
-                <option value="lead_convite">🚀 Convite de Acesso Gratuito para Leads</option>
-                <option value="parabenizacao">🏆 Parabéns pela Semana de Treinos Concluída</option>
-              </select>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="font-bold text-slate-200">Objetivo / Prompt da Mensagem:</label>
+                <span class="text-[11px] text-slate-400">Totalmente editável</span>
+              </div>
+              <textarea id="createCampaignPrompt" rows="3" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-xs text-white outline-none focus:border-purple-500 font-sans leading-relaxed transition-all placeholder:text-slate-500" placeholder="Digite exatamente o que você deseja comunicar (ex: Avisar sobre o treino de hipertrofia de hoje, enviar chave pix para renovação, convite para aula experimental, dar os parabéns pela meta semanal batida, etc.)..."></textarea>
+
+              <!-- Sugestões Rápidas de Prompts (Chips) -->
+              <div class="mt-2 space-y-1.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Atalhos rápidos para o Prompt:</span>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="setCampaignPrompt('Avisar a turma sobre o treino de força e controle de carga do dia no app Montanha Hybrid Training')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-purple-600/30 border border-slate-700/60 hover:border-purple-500/50 text-slate-300 hover:text-white transition text-[11px] cursor-pointer">
+                    🏋️ Treino do Dia
+                  </button>
+                  <button type="button" onclick="setCampaignPrompt('Lembrar com gentileza sobre a renovação da mensalidade do Studio via Pix para não interromper os treinos')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-purple-600/30 border border-slate-700/60 hover:border-purple-500/50 text-slate-300 hover:text-white transition text-[11px] cursor-pointer">
+                    💰 Lembrete Pix
+                  </button>
+                  <button type="button" onclick="setCampaignPrompt('Convidar lead para degustação gratuita de 7 dias na metodologia híbrida com ativação imediata')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-purple-600/30 border border-slate-700/60 hover:border-purple-500/50 text-slate-300 hover:text-white transition text-[11px] cursor-pointer">
+                    🚀 Convite Leads
+                  </button>
+                  <button type="button" onclick="setCampaignPrompt('Parabenizar aluno por completar 100% da meta semanal de treinos com consistência exemplar')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-purple-600/30 border border-slate-700/60 hover:border-purple-500/50 text-slate-300 hover:text-white transition text-[11px] cursor-pointer">
+                    🏆 Parabéns Meta
+                  </button>
+                  <button type="button" onclick="setCampaignPrompt('Sentimos sua falta nos treinos essa semana! Como está sua rotina? Vamos retomar o ritmo juntos!')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-purple-600/30 border border-slate-700/60 hover:border-purple-500/50 text-slate-300 hover:text-white transition text-[11px] cursor-pointer">
+                    ⏰ Aluno Ausente
+                  </button>
+                  <button type="button" onclick="setCampaignPrompt('Condição exclusiva de renovação trimestral com desconto e bônus de consultoria individual')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-purple-600/30 border border-slate-700/60 hover:border-purple-500/50 text-slate-300 hover:text-white transition text-[11px] cursor-pointer">
+                    🎁 Oferta Especial
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>
-              <label class="block font-semibold mb-1 text-slate-300">Tom de Voz:</label>
-              <select id="createCampaignTone" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
-                <option value="motivacional">🔥 Motivacional &amp; Enérgico (Coach Montanha)</option>
-                <option value="formal">📋 Profissional &amp; Direto</option>
-                <option value="amigavel">🤝 Amigável &amp; Descontraído</option>
-              </select>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold mb-1 text-slate-200">Tom de Voz:</label>
+                <select id="createCampaignTone" onchange="handleToneChange()" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium cursor-pointer">
+                  <option value="motivacional">🔥 Motivacional &amp; Enérgico (Coach Montanha)</option>
+                  <option value="formal">📋 Profissional &amp; Direto (Corporativo)</option>
+                  <option value="amigavel">🤝 Amigável &amp; Acolhedor (Empático)</option>
+                  <option value="urgencia">⚡ Urgência &amp; Escassez (Últimas Vagas/Horas)</option>
+                  <option value="conciso">🎯 Conciso &amp; Direto ao Ponto (Ultra Rápido)</option>
+                  <option value="educativo">🧘 Educativo &amp; Orientador (Técnico / Saúde)</option>
+                  <option value="desafiador">🏆 Desafiador &amp; Foco em Metas (Mente Blindada)</option>
+                  <option value="personalizado">✍️ Personalizado (Digitar tom específico...)</option>
+                </select>
+              </div>
+
+              <div id="customToneContainer" class="hidden">
+                <label class="block font-bold mb-1 text-slate-200">Especifique o Tom Desejado:</label>
+                <input type="text" id="customToneInput" placeholder="Ex: descontraído com gírias, solene, poético..." class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500">
+              </div>
             </div>
-            <button type="button" onclick="generateAiCampaignText()" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-2.5 rounded-xl shadow-lg transition cursor-pointer">
-              ✨ Gerar Mensagem com IA
+
+            <!-- Variáveis Dinâmicas Úteis -->
+            <div class="p-2.5 rounded-xl bg-purple-500/5 border border-purple-500/20 flex flex-wrap items-center gap-2 text-[11px]">
+              <span class="text-purple-300 font-semibold">Inserir tags no prompt:</span>
+              <button type="button" onclick="insertTagIntoPrompt('{nome}')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-amber-300 font-mono font-bold hover:bg-zinc-800 transition cursor-pointer">{nome}</button>
+              <button type="button" onclick="insertTagIntoPrompt('{turma}')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-cyan-300 font-mono font-bold hover:bg-zinc-800 transition cursor-pointer">{turma}</button>
+              <button type="button" onclick="insertTagIntoPrompt('{vencimento}')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-emerald-300 font-mono font-bold hover:bg-zinc-800 transition cursor-pointer">{vencimento}</button>
+              <button type="button" onclick="insertTagIntoPrompt('{chave_pix}')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-indigo-300 font-mono font-bold hover:bg-zinc-800 transition cursor-pointer">{chave_pix}</button>
+            </div>
+
+            <button type="button" onclick="generateAiCampaignText()" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer text-sm">
+              <span>✨</span> Gerar Mensagem com IA
             </button>
           </div>
         </div>
@@ -1698,19 +1736,131 @@
       bar.style.height = (btnRect.height - 6) + 'px';
     }
 
-    function generateAiCampaignText() {
-      const goal = document.getElementById('createCampaignGoal').value;
-      let msg = '';
-      if (goal === 'cth_treino') {
-        msg = '🏋️ *TREINO DO DIA LIBERADO — TURMA CTH* ⚡\n\nFala guerreiro(a)! O microciclo de hoje já está disponível no seu app *Montanha Hybrid Training*.\n\nFoco total na intensidade e controle de carga. Nos vemos no ranking!\n\n_Bons treinos, Coach Montanha_';
-      } else if (goal === 'cobranca_pix') {
-        msg = '💰 *LEMBRETE DE RENOVAÇÃO DO STUDIO* ✨\n\nOlá {nome}! Sua assinatura mensal do Studio vence em breve.\n\nPara garantir a continuidade dos seus treinos sem interrupção no app, faça seu Pix utilizando a chave cadastrada.\n\nQualquer dúvida estamos à disposição!';
-      } else if (goal === 'lead_convite') {
-        msg = '🚀 *CONVITE EXCLUSIVO — ECOSSISTEMA MONTANHA* 🎯\n\nOlá {nome}! Liberamos um acesso experimental de 7 dias na nossa plataforma de Alta Performance.\n\nVenha conhecer nossa metodologia híbrida e acelerar seus resultados. Responda SIM para ativar agora!';
-      } else {
-        msg = '🏆 *PARABÉNS PELA SEMANA DE TREINOS!* 🔥\n\nParabéns {nome}! Você completou 100% da sua meta semanal de treinos.\n\nA consistência é a chave para a verdadeira evolução. Continue firme!';
+    function setCampaignPrompt(text) {
+      const el = document.getElementById('createCampaignPrompt');
+      if (el) {
+        el.value = text;
+        el.focus();
       }
-      document.getElementById('createMessagePreview').value = msg;
+    }
+
+    function insertTagIntoPrompt(tag) {
+      const el = document.getElementById('createCampaignPrompt');
+      if (!el) return;
+      const start = el.selectionStart || el.value.length;
+      const end = el.selectionEnd || el.value.length;
+      el.value = el.value.substring(0, start) + ' ' + tag + ' ' + el.value.substring(end);
+      el.focus();
+      el.selectionStart = el.selectionEnd = start + tag.length + 2;
+    }
+
+    function handleToneChange() {
+      const tone = document.getElementById('createCampaignTone').value;
+      const container = document.getElementById('customToneContainer');
+      if (container) {
+        if (tone === 'personalizado') {
+          container.classList.remove('hidden');
+          document.getElementById('customToneInput')?.focus();
+        } else {
+          container.classList.add('hidden');
+        }
+      }
+    }
+
+    function generateAiCampaignText() {
+      const promptInput = document.getElementById('createCampaignPrompt')?.value.trim() || '';
+      const toneSelect = document.getElementById('createCampaignTone')?.value || 'motivacional';
+      const customTone = document.getElementById('customToneInput')?.value.trim() || '';
+
+      const prompt = promptInput || 'Aviso importante sobre treinos e novidades no app Montanha';
+      const pLower = prompt.toLowerCase();
+
+      let header = '';
+      let greeting = '';
+      let body = '';
+      let cta = '';
+      let signoff = '';
+
+      // 1. Configurar Saudação e Assinatura por Tom de Voz
+      if (toneSelect === 'formal') {
+        greeting = 'Prezado(a) {nome},';
+        signoff = 'Atenciosamente,\n*Equipe Montanha Studio*';
+      } else if (toneSelect === 'amigavel') {
+        greeting = 'Oi {nome}, tudo bem com você? 😊';
+        signoff = 'Um abraço e ótimos treinos! 🤝\n*Equipe Montanha*';
+      } else if (toneSelect === 'urgencia') {
+        greeting = '🚨 *ATENÇÃO, {nome}!*';
+        signoff = 'Não deixe para depois! ⚡\n*Coach Montanha*';
+      } else if (toneSelect === 'conciso') {
+        greeting = 'Fala {nome}!';
+        signoff = 'Tmj! 🚀';
+      } else if (toneSelect === 'educativo') {
+        greeting = 'Olá {nome}! Tudo bem?';
+        signoff = 'Foco na sua longevidade e consistência! 🧘\n*Coach Montanha*';
+      } else if (toneSelect === 'desafiador') {
+        greeting = 'Fala guerreiro(a) {nome}! ⚔️';
+        signoff = 'Disciplina supera motivação todos os dias. Vamos pra cima! 🏆\n*Coach Montanha*';
+      } else if (toneSelect === 'personalizado' && customTone) {
+        greeting = `Olá {nome}! (${customTone})`;
+        signoff = `*Coach Montanha* [Tom: ${customTone}]`;
+      } else {
+        // Motivacional (padrão)
+        greeting = 'Fala guerreiro(a) {nome}! 🔥';
+        signoff = 'Foco total na missão e nos vemos no ranking! 🚀\n_Bons treinos, Coach Montanha_';
+      }
+
+      // 2. Análise do Tema do Prompt
+      if (pLower.includes('pix') || pLower.includes('renova') || pLower.includes('cobr') || pLower.includes('mensal')) {
+        header = '💰 *LEMBRETE DE RENOVAÇÃO DO STUDIO* ✨';
+        if (toneSelect === 'formal') {
+          body = 'Gostaríamos de lembrar que o vencimento da sua mensalidade {turma} se aproxima ({vencimento}).\n\nPara a manutenção dos seus acessos ao aplicativo e treinos programados, solicitamos a realização do pagamento via Chave Pix:\n\n🔑 *Chave Pix:* `{chave_pix}`';
+          cta = 'Assim que efetuar, por favor nos envie o comprovante para atualização imediata no sistema.';
+        } else if (toneSelect === 'urgencia') {
+          body = 'Seu ciclo no Studio vence em breve ({vencimento}) e as vagas da turma {turma} são limitadas!\n\nGaranta sua vaga sem interrupção efetuando o Pix agora:\n\n🔑 *Chave Pix:* `{chave_pix}`';
+          cta = '⚡ Envie o comprovante aqui para garantir seu lugar!';
+        } else {
+          body = 'Sua assinatura mensal do Studio {turma} vence em breve ({vencimento}).\n\nPara garantir a continuidade dos seus treinos e evolução contínua no app, faça seu Pix utilizando a chave cadastrada:\n\n🔑 *Chave Pix:* `{chave_pix}`';
+          cta = 'Qualquer dúvida estamos à disposição para te ajudar!';
+        }
+      } else if (pLower.includes('treino') || pLower.includes('cth') || pLower.includes('carga') || pLower.includes('exerc')) {
+        header = '🏋️ *TREINO DO DIA LIBERADO — TURMA {turma}* ⚡';
+        if (toneSelect === 'conciso') {
+          body = `Seu treino já está no app: ${prompt}.`;
+          cta = 'Bora pra cima!';
+        } else if (toneSelect === 'desafiador') {
+          body = `Hoje é dia de superar limites! ${prompt}.\n\nControle de carga rigoroso, cadência sob comando e sem desculpas. O registro no app é obrigatório!`;
+          cta = 'Abra o app, consulte seu treino e execute com intensidade máxima!';
+        } else {
+          body = `O microciclo de hoje já está disponível no seu app *Montanha Hybrid Training*!\n\n📌 *Foco da sessão:* ${prompt}\n\nAcompanhe suas séries, controle as cargas e registre seus tempos.`;
+          cta = 'Nos vemos no treino!';
+        }
+      } else if (pLower.includes('lead') || pLower.includes('convite') || pLower.includes('degusta') || pLower.includes('gratuito') || pLower.includes('trial')) {
+        header = '🚀 *CONVITE EXCLUSIVO — ECOSSISTEMA MONTANHA* 🎯';
+        body = `Liberamos um acesso experimental especial para você conhecer nossa metodologia de Alta Performance!\n\n${prompt}\n\nTenha acesso completo a treinos personalizados, acompanhamento técnico e comunidade ativa.`;
+        cta = 'Responda *SIM* nesta mensagem para receber seu login e senha temporária agora!';
+      } else if (pLower.includes('parabens') || pLower.includes('meta') || pLower.includes('conclu') || pLower.includes('semana')) {
+        header = '🏆 *META CONCLUÍDA COM SUCESSO!* 🌟';
+        body = `Passando para reconhecer a sua dedicação! ${prompt}.\n\nResultados reais nascem da consistência diária. Cada repetição conta!`;
+        cta = 'Continue com essa mesma energia na próxima semana!';
+      } else if (pLower.includes('ausente') || pLower.includes('falta') || pLower.includes('sumid') || pLower.includes('retom')) {
+        header = '⏰ *SENTIMOS SUA FALTA NOS TREINOS!* 💬';
+        body = `Percebemos que você não compareceu às últimas sessões da turma {turma}.\n\n${prompt}\n\nSabemos que a rotina pode ficar corrida, mas estamos aqui para ajustar seu planejamento e te ajudar a retomar o ritmo sem cobranças exageradas.`;
+        cta = 'Como está sua semana? Me responde aqui para planejarmos sua volta!';
+      } else if (pLower.includes('oferta') || pLower.includes('desconto') || pLower.includes('promo') || pLower.includes('condiç')) {
+        header = '🎁 *OPORTUNIDADE ESPECIAL PARA VOCÊ* 💥';
+        body = `${prompt}\n\nCondição exclusiva e por tempo limitado para acelerar sua jornada de treinos e saúde.`;
+        cta = 'Deseja aproveitar essa condição? Responda aqui para garantir!';
+      } else {
+        // Prompt genérico ou personalizado
+        header = '📢 *COMUNICADO OFICIAL — ECOSSISTEMA MONTANHA* 📌';
+        body = `${prompt}\n\nEstamos sempre trabalhando para oferecer a melhor experiência para você na turma {turma}.`;
+        cta = 'Qualquer dúvida, estamos 100% à disposição!';
+      }
+
+      // Montar mensagem final estruturada
+      let fullMsg = `${header}\n\n${greeting}\n\n${body}\n\n${cta}\n\n${signoff}`;
+
+      document.getElementById('createMessagePreview').value = fullMsg;
     }
 
     function applyGeneratedMessageToDispatch() {
