@@ -480,10 +480,16 @@
               <p class="text-xs text-[var(--muted-foreground)]">Filtre, busque e selecione nominalmente os destinatários</p>
             </div>
             
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="selectAllVisibleContacts()" class="text-[11px] text-cyan-400 hover:underline font-bold">Selecionar Visíveis</button>
-              <span class="text-[11px] text-[var(--border)]">|</span>
-              <button type="button" onclick="clearSelectedContacts()" class="text-[11px] text-red-400 hover:underline font-bold">Limpar Seleção</button>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button type="button" onclick="selectAllContactsInBase()" title="Selecionar todos os contatos da base" class="text-[11px] text-purple-300 hover:text-purple-200 font-bold bg-purple-600/20 border border-purple-500/30 px-2.5 py-1 rounded-lg transition cursor-pointer">
+                ✓ Todos da Base
+              </button>
+              <button type="button" onclick="selectAllInActiveGroup()" title="Selecionar todos os contatos do grupo/categoria atual" class="text-[11px] text-cyan-300 hover:text-cyan-200 font-bold bg-cyan-600/20 border border-cyan-500/30 px-2.5 py-1 rounded-lg transition cursor-pointer">
+                ✓ Todos do Grupo
+              </button>
+              <button type="button" onclick="clearSelectedContacts()" title="Limpar seleção" class="text-[11px] text-red-400 hover:text-red-300 font-bold bg-red-950/30 border border-red-500/30 px-2 py-1 rounded-lg transition cursor-pointer">
+                ✕ Limpar
+              </button>
             </div>
           </div>
 
@@ -1637,7 +1643,7 @@
       if (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) {
         return 'http://localhost:3001';
       }
-      return 'https://peter-present-investments-convert.trycloudflare.com';
+      return 'https://doom-plc-smaller-twist.trycloudflare.com';
     }
 
     let waPollInterval = null;
@@ -2543,7 +2549,12 @@
       document.getElementById('deviceFileInput').click();
     }
 
-    function selectAllVisibleContacts() {
+    function selectAllContactsInBase() {
+      userContacts.forEach(c => selectedContactIds.add(c.id));
+      renderContactsTable();
+    }
+
+    function selectAllInActiveGroup() {
       const query = (document.getElementById('contactSearchInput')?.value || '').toLowerCase();
       const cat = document.getElementById('categoryFilterSelect')?.value || 'all';
       
@@ -2555,6 +2566,10 @@
         }
       });
       renderContactsTable();
+    }
+
+    function selectAllVisibleContacts() {
+      selectAllInActiveGroup();
     }
 
     function clearSelectedContacts() {
@@ -2795,43 +2810,54 @@
 
     function resetFileSelection() {
       uploadedCustomFileName = null;
-      document.getElementById('mediaSelect').value = '';
-      document.getElementById('deviceFileInput').value = '';
-      document.getElementById('fileUploadBadge').classList.add('hidden');
+      const mediaSelect = document.getElementById('mediaSelect');
+      if (mediaSelect) mediaSelect.value = '';
+      const deviceFile = document.getElementById('deviceFileInput');
+      if (deviceFile) deviceFile.value = '';
+      const badge = document.getElementById('fileUploadBadge');
+      if (badge) badge.classList.add('hidden');
     }
 
     function getQuickTemplates() {
-      const saved = localStorage.getItem('eduflow_quick_templates_' + currentUser.email);
+      const email = (currentUser && currentUser.email) ? currentUser.email : 'demo@eduflow.app';
+      const saved = localStorage.getItem('eduflow_quick_templates_' + email);
       return saved ? JSON.parse(saved) : DEFAULT_TEMPLATES;
     }
 
     function renderQuickTemplates() {
       const list = getQuickTemplates();
       const container = document.getElementById('quickTemplatesContainer');
+      if (!container) return;
       container.innerHTML = '';
 
       list.forEach(tpl => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 px-2.5 py-1 rounded-lg transition text-[11px] font-bold truncate max-w-[200px]';
+        btn.className = 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 px-2.5 py-1 rounded-lg transition text-[11px] font-bold truncate max-w-[200px] cursor-pointer';
         btn.innerText = tpl.title;
-        btn.onclick = () => { document.getElementById('messageText').value = tpl.text; };
+        btn.onclick = () => {
+          const msgEl = document.getElementById('messageText');
+          if (msgEl) msgEl.value = tpl.text;
+        };
         container.appendChild(btn);
       });
     }
 
     function openTemplatesModal() {
       renderTemplatesEditor();
-      document.getElementById('templatesModal').classList.remove('hidden');
+      const modal = document.getElementById('templatesModal');
+      if (modal) modal.classList.remove('hidden');
     }
 
     function closeTemplatesModal() {
-      document.getElementById('templatesModal').classList.add('hidden');
+      const modal = document.getElementById('templatesModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function renderTemplatesEditor() {
       const list = getQuickTemplates();
       const container = document.getElementById('templatesListEditor');
+      if (!container) return;
       container.innerHTML = '';
 
       list.forEach((tpl, idx) => {
@@ -2849,24 +2875,30 @@
     }
 
     function addNewTemplate() {
-      const title = document.getElementById('newTplTitle').value.trim();
-      const text = document.getElementById('newTplText').value.trim();
-      if (!title || !text) return alert('Preencha título e mensagem');
+      const titleEl = document.getElementById('newTplTitle');
+      const textEl = document.getElementById('newTplText');
+      const title = titleEl ? titleEl.value.trim() : '';
+      const text = textEl ? textEl.value.trim() : '';
 
+      if (!title || !text) return alert('Por favor, preencha o título e o texto do modelo.');
+
+      const email = (currentUser && currentUser.email) ? currentUser.email : 'demo@eduflow.app';
       const list = getQuickTemplates();
       list.push({ id: 'tpl_' + Date.now(), title, text });
-      localStorage.setItem('eduflow_quick_templates_' + currentUser.email, JSON.stringify(list));
+      localStorage.setItem('eduflow_quick_templates_' + email, JSON.stringify(list));
 
-      document.getElementById('newTplTitle').value = '';
-      document.getElementById('newTplText').value = '';
+      if (titleEl) titleEl.value = '';
+      if (textEl) textEl.value = '';
       renderQuickTemplates();
       renderTemplatesEditor();
+      alert('✅ Novo modelo rápido salvo com sucesso!');
     }
 
     function deleteTemplate(idx) {
+      const email = (currentUser && currentUser.email) ? currentUser.email : 'demo@eduflow.app';
       const list = getQuickTemplates();
       list.splice(idx, 1);
-      localStorage.setItem('eduflow_quick_templates_' + currentUser.email, JSON.stringify(list));
+      localStorage.setItem('eduflow_quick_templates_' + email, JSON.stringify(list));
       renderQuickTemplates();
       renderTemplatesEditor();
     }
