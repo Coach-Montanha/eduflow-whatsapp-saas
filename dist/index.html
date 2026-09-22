@@ -935,8 +935,60 @@
         <h4 class="font-bold text-purple-300">Criar Novo Modelo</h4>
         <input type="text" id="newTplTitle" placeholder="Título (ex: 📣 Lembrete de Aula)" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500">
         <textarea id="newTplText" rows="2" placeholder="Texto da mensagem..." class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 resize-none"></textarea>
-        <button type="button" onclick="addNewTemplate()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl transition">
-          + Adicionar Modelo
+  <!-- ==================================================================== -->
+  <!-- MODAL TERMOS DE USO & SEGURANÇA JURÍDICA (MARCO CIVIL DA INTERNET) -->
+  <!-- ==================================================================== -->
+  <div id="termsModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-[var(--card)] border border-purple-500/40 rounded-2xl max-w-2xl w-full p-6 md:p-8 shadow-[0_0_60px_rgba(168,85,247,0.25)] space-y-5 text-xs text-slate-200">
+      <div class="flex justify-between items-start border-b border-slate-800 pb-4">
+        <div class="space-y-1">
+          <span class="text-[10px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/40 px-2.5 py-0.5 rounded-full">
+            ⚖️ SEGURANÇA JURÍDICA &amp; MARCO CIVIL DA INTERNET
+          </span>
+          <h3 class="text-lg md:text-xl font-black text-white">Termos de Uso, Privacidade &amp; Responsabilidade Legal</h3>
+        </div>
+      </div>
+
+      <!-- Legal Text Box -->
+      <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 max-h-72 overflow-y-auto custom-scrollbar space-y-3 text-[11px] leading-relaxed font-sans text-slate-300">
+        <p class="font-bold text-amber-300">
+          ⚠️ Por favor, leia atentamente os termos abaixo antes de prosseguir com a utilização da plataforma:
+        </p>
+
+        <div>
+          <h4 class="font-bold text-white uppercase text-[10px] tracking-wider mb-0.5">1. Titularidade e Exclusividade da Conta WhatsApp</h4>
+          <p>Ao conectar qualquer conta ou número de WhatsApp a esta plataforma, o USUÁRIO declara expressamente que é o legítimo proprietário, titular ou operador autorizado da linha telefônica conectada. A plataforma atua estritamente como intermediadora tecnológica para automação sob instrução direta do USUÁRIO.</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white uppercase text-[10px] tracking-wider mb-0.5">2. Proibição de Spam e Uso Ilícito (Lei nº 12.965/2014 &amp; LGPD)</h4>
+          <p>É expressamente vedado o uso do sistema para a prática de SPAM, envio de mensagens não autorizadas, conteúdo ofensivo, phishing, fraudes ou qualquer infração às Políticas de Uso do WhatsApp/Meta e à legislação brasileira vigente (Lei Geral de Proteção de Dados - LGPD e Marco Civil da Internet).</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white uppercase text-[10px] tracking-wider mb-0.5">3. Registro Obrigatório de Logs de Auditoria (Marco Civil da Internet)</h4>
+          <p>Para fins de conformidade legal, auditoria e rastreabilidade irrefutável de autoria (nos termos do Art. 15 do Marco Civil da Internet), esta plataforma registra e armazena automaticamente em banco de dados: <b>(a) O endereço IP do dispositivo solicitante; (b) Data e Hora exatas de cada requisição; (c) E-mail do usuário autenticado; (d) Destinatários da mensagem.</b></p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white uppercase text-[10px] tracking-wider mb-0.5">4. Isenção de Responsabilidade do Provedor SaaS</h4>
+          <p>O provedor do software fica totalmente isento de qualquer responsabilidade civil, administrativa ou criminal decorrente do uso indevido, bloqueios de linha ou conteúdos transmitidos por decisão individual do USUÁRIO.</p>
+        </div>
+      </div>
+
+      <!-- Consent Status Footer -->
+      <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-[11px] text-purple-200 flex items-center gap-2">
+        <span class="text-base">📌</span>
+        <span>Ao clicar em <b>"Aceito os Termos"</b>, seu aceite será registrado em banco de dados com seu e-mail, IP e data/hora.</span>
+      </div>
+
+      <!-- Interactive Action Buttons -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        <button type="button" onclick="refuseTermsOfUse()" class="w-full bg-slate-900 hover:bg-red-500/20 text-red-400 border border-red-500/40 font-bold py-3 rounded-xl transition cursor-pointer text-xs">
+          ❌ Recuso os Termos
+        </button>
+        <button type="button" onclick="acceptTermsOfUse()" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition cursor-pointer text-xs flex items-center justify-center gap-1.5">
+          ✅ Aceito os Termos de Uso
         </button>
       </div>
     </div>
@@ -1535,7 +1587,7 @@
       if (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) {
         return 'http://localhost:3001';
       }
-      return 'https://cure-olympic-making-has.trycloudflare.com';
+      return 'https://peter-present-investments-convert.trycloudflare.com';
     }
 
     let waPollInterval = null;
@@ -1707,6 +1759,53 @@
       alert('Instruções de recuperação de senha enviadas com sucesso para ' + email.trim() + '!');
     }
 
+    function checkUserTermsAcceptance(email) {
+      if (!email) return false;
+      const key = 'eduflow_terms_accepted_' + email;
+      const saved = localStorage.getItem(key);
+      if (!saved) {
+        document.getElementById('termsModal').classList.remove('hidden');
+        return false;
+      }
+      return true;
+    }
+
+    async function acceptTermsOfUse() {
+      if (!currentUser || !currentUser.email) return;
+      const email = currentUser.email;
+      const key = 'eduflow_terms_accepted_' + email;
+      const timestamp = new Date().toISOString();
+
+      localStorage.setItem(key, JSON.stringify({
+        accepted: true,
+        timestamp: timestamp,
+        version: 'v1.0-2026-marco-civil'
+      }));
+
+      document.getElementById('termsModal').classList.add('hidden');
+
+      try {
+        const baseUrl = getApiBaseUrl();
+        await fetch(baseUrl + '/api/accept-terms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userEmail: email,
+            version: 'v1.0-2026-marco-civil',
+            timestamp: timestamp
+          })
+        });
+      } catch (err) {
+        console.warn('Backend terms acceptance record:', err.message);
+      }
+    }
+
+    function refuseTermsOfUse() {
+      alert('⚠️ Você recusou os Termos de Uso.\nPor questões de segurança jurídica e conformidade com o Marco Civil da Internet, a utilização do aplicativo não é permitida sem o aceite dos termos.');
+      document.getElementById('termsModal').classList.add('hidden');
+      handleLogout();
+    }
+
     function loginUser(email) {
       currentUser = { email };
       localStorage.setItem('eduflow_logged_user', email);
@@ -1721,6 +1820,7 @@
       loadUserData();
       startWaPolling();
       switchTab('dashboard');
+      checkUserTermsAcceptance(email);
     }
 
     function handleLogout() {
@@ -2492,6 +2592,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            userEmail: currentUser ? currentUser.email : 'demo@eduflow.app',
             contacts: targetContacts,
             message: message,
             mediaPath: media || null,
