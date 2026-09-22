@@ -500,17 +500,12 @@
             </select>
           </div>
 
-          <!-- Action buttons for Contacts -->
-          <div class="flex items-center justify-between gap-2 bg-[var(--background)] p-2.5 rounded-xl border border-[var(--border)] text-xs">
+          <!-- Action badge for Contacts -->
+          <div class="flex items-center justify-between gap-2 bg-[var(--background)] p-3 rounded-xl border border-[var(--border)] text-xs">
             <span id="selectedCountBadge" class="font-bold text-purple-300">Nenhum contato selecionado</span>
-            <div class="flex gap-2">
-              <button type="button" onclick="triggerCsvImport()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg transition font-bold text-[11px]">
-                📁 + Importar CSV
-              </button>
-              <button type="button" onclick="openAddContactModal()" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 px-2.5 py-1 rounded-lg transition font-bold text-[11px]">
-                + Novo
-              </button>
-            </div>
+            <button type="button" onclick="switchTab('contacts')" class="text-[11px] text-purple-400 hover:underline font-bold">
+              ⚙️ Gerenciar / Adicionar Contatos →
+            </button>
           </div>
 
           <!-- Scrollable Contacts List -->
@@ -525,33 +520,18 @@
         <div class="lg:col-span-6 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4 shadow-xl">
           <div class="border-b border-[var(--border)] pb-4">
             <h3 class="font-bold text-base text-white">2. Configurar Disparo WhatsApp</h3>
-            <p class="text-xs text-[var(--muted-foreground)]">Mensagem, mídias e agendamento de horário</p>
+            <p class="text-xs text-[var(--muted-foreground)]">Mensagem de texto, anexos opcionais e agendamento</p>
           </div>
 
           <!-- Selected target summary -->
           <div class="bg-[var(--background)] p-3 rounded-xl border border-purple-500/30 text-xs space-y-1">
             <span class="block text-[11px] text-[var(--muted-foreground)] font-semibold uppercase tracking-wider">DESTINATÁRIOS SELECIONADOS:</span>
-            <span id="dispatchTargetSummary" class="font-bold text-sm text-purple-300 block">Nenhum contato selecionado</span>
+            <span id="dispatchTargetSummary" class="font-bold text-sm text-amber-400 block">⚠️ Nenhum contato selecionado (Selecione ao menos 1)</span>
           </div>
 
           <!-- Form controls -->
           <div class="space-y-4 text-xs">
             
-            <!-- Attachment selection -->
-            <div class="space-y-1.5">
-              <label class="block font-semibold text-slate-300">Anexar Mídia (Vídeo, Imagem, Doc):</label>
-              <select id="mediaSelect" onchange="handleMediaSelectChange(this)" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
-                <option value="">🚫 Somente Texto (Sem Anexo)</option>
-                <option value="brag.mp4">🎬 Vídeo Demonstrativo (brag.mp4)</option>
-                <option value="contact-sheet.jpg">🖼️ Tabela de Contatos (contact-sheet.jpg)</option>
-                <option value="custom">📁 Escolher do Meu Computador / Celular...</option>
-              </select>
-              <input type="file" id="deviceFileInput" onchange="uploadDeviceFile(this)" class="hidden" accept="image/*,video/*,application/pdf">
-              <div id="fileUploadBadge" class="hidden text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/30">
-                <span id="fileNameDisplay">✓ Arquivo Anexado</span>
-              </div>
-            </div>
-
             <!-- Quick templates bar -->
             <div class="space-y-1.5">
               <div class="flex justify-between items-center">
@@ -563,9 +543,28 @@
               </div>
             </div>
 
-            <!-- Message text area -->
-            <div class="space-y-1.5">
-              <label class="block font-semibold text-slate-300">Mensagem do Disparo:</label>
+            <!-- Message text area with Paperclip Attachment -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="font-semibold text-slate-300 flex items-center gap-1.5">
+                  <span>💬 Mensagem do Disparo:</span>
+                </label>
+                <button type="button" onclick="triggerDeviceFileInput()" title="Anexar Imagem ou Arquivo" class="inline-flex items-center gap-1.5 text-xs text-purple-300 hover:text-purple-200 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/40 px-3 py-1.5 rounded-xl transition font-bold cursor-pointer shadow-sm">
+                  <span>📎</span> Anexar Imagem / Arquivo
+                </button>
+              </div>
+
+              <input type="file" id="deviceFileInput" onchange="uploadDeviceFile(this)" class="hidden" accept="image/*,video/*,application/pdf">
+
+              <div id="fileUploadBadge" class="hidden flex items-center justify-between text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/30">
+                <span id="fileNameDisplay" class="flex items-center gap-1.5">
+                  <span>📎</span> Arquivo Anexado
+                </span>
+                <button type="button" onclick="resetFileSelection()" class="text-red-400 hover:text-red-300 text-xs font-bold hover:underline">
+                  ✕ Remover Anexo
+                </button>
+              </div>
+
               <textarea id="messageText" rows="4" placeholder="Escreva a mensagem personalizada aqui..." class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-white outline-none focus:border-purple-500 resize-none font-sans text-xs leading-relaxed"></textarea>
             </div>
 
@@ -608,10 +607,13 @@
           <div class="flex items-center gap-2">
             <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Sincronização Ao Vivo (4s)
+              Ao Vivo (4s)
             </span>
             <button type="button" onclick="syncLiveHistoryFromBackend()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-[var(--border)] px-3 py-1 rounded-xl transition font-bold cursor-pointer">
-              🔄 Atualizar Agora
+              🔄 Atualizar
+            </button>
+            <button type="button" onclick="clearAllHistory()" class="text-xs bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/40 px-3 py-1 rounded-xl transition font-bold cursor-pointer">
+              🗑️ Limpar Histórico
             </button>
           </div>
         </div>
@@ -625,7 +627,8 @@
                   <th class="p-3">Destinatário(s)</th>
                   <th class="p-3">Mensagem / Mídia</th>
                   <th class="p-3">Tipo / Status</th>
-                  <th class="p-3 text-right">Auditoria</th>
+                  <th class="p-3">Auditoria</th>
+                  <th class="p-3 text-right">Ação</th>
                 </tr>
               </thead>
               <tbody id="liveDispatchesDashboardBody" class="divide-y divide-[var(--border)] text-slate-200">
@@ -639,50 +642,84 @@
       </div>
     </section>
 
-    <!-- TAB CONTENT 2: CONTATOS (CSV & MANUAL) -->
+    <!-- TAB CONTENT 2: CONTATOS (GESTÃO DE BASE & GRUPOS) -->
     <section id="tabContentContacts" class="tab-page hidden space-y-6">
       <div class="flex justify-between items-center bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] shadow-md">
         <button onclick="switchTab('dashboard')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-          ← Voltar ao Início
+          ← Voltar ao Dashboard Central
         </button>
-        <span class="text-xs font-semibold text-[var(--muted-foreground)]">Gestão Nominal de Base</span>
+        <span class="text-xs font-semibold text-[var(--muted-foreground)]">Gestão & Auditoria de Base Nominal</span>
       </div>
-      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
+
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-5 shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-[var(--border)] pb-4">
           <div>
-            <h3 class="font-bold text-base text-white">1. Gestão & Importação de Contatos</h3>
-            <p class="text-xs text-[var(--muted-foreground)]">Cada usuário possui sua própria base de dados isolada no Supabase</p>
+            <h3 class="font-bold text-base text-white flex items-center gap-2">
+              <span>👥</span> Gestão Completa de Contatos & Grupos
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)]">Adicione, edite, audite, organize em grupos ou exclua contatos da sua base isolada</p>
           </div>
 
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button onclick="triggerCsvImport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 flex-1 sm:flex-none">
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <button onclick="triggerCsvImport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl transition shadow-md flex items-center justify-center gap-1.5">
               📁 Importar CSV / Excel
             </button>
             <input type="file" id="csvFileInput" onchange="handleCsvUpload(this)" accept=".csv,.txt,.xlsx" class="hidden">
 
-            <button onclick="openAddContactModal()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 flex-1 sm:flex-none">
+            <button onclick="openAddContactModalDialog()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl transition shadow-md flex items-center justify-center gap-1.5">
               + Novo Contato
+            </button>
+
+            <button onclick="openManageGroupsModal()" class="bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold text-xs px-3.5 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+              🏷️ Gerenciar Grupos
             </button>
           </div>
         </div>
 
-        <!-- Filters & Search -->
-        <div class="flex flex-col sm:flex-row gap-3">
-          <input type="text" id="contactSearchInput" oninput="renderContactsTable()" placeholder="Buscar por Nome ou Telefone..." class="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-purple-500">
-          
-          <select id="categoryFilterSelect" onchange="renderContactsTable()" class="bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-purple-500">
-            <option value="all">Todas as Categorias</option>
-            <option value="CTH">🏋️ CTH</option>
-            <option value="LEAD">🚀 LEAD</option>
-            <option value="PT">👤 PT</option>
-            <option value="GERAL">📋 GERAL</option>
-          </select>
+        <!-- Search, Filter & Bulk Actions Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
+          <div class="flex flex-1 flex-col sm:flex-row gap-2">
+            <input type="text" id="contactsMgmtSearch" oninput="renderContactsManagementTable()" placeholder="🔍 Buscar por Nome ou Telefone..." class="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-white outline-none focus:border-purple-500">
+            
+            <select id="contactsMgmtCatFilter" onchange="renderContactsManagementTable()" class="bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-white outline-none focus:border-purple-500 font-medium">
+              <option value="all">Todas as Categorias / Grupos</option>
+              <option value="CTH">🏋️ CTH</option>
+              <option value="LEAD">🚀 LEAD</option>
+              <option value="PT">👤 PT</option>
+              <option value="GERAL">📋 GERAL</option>
+            </select>
+          </div>
+
+          <!-- Bulk Selection Tools -->
+          <div class="flex items-center gap-2">
+            <span id="mgmtSelectedCount" class="text-[11px] text-purple-300 font-bold">0 selecionados</span>
+            <button onclick="bulkDeleteContacts()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/40 px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition">
+              🗑️ Excluir Selecionados
+            </button>
+          </div>
         </div>
 
-        <!-- Contacts List Table -->
+        <!-- Full Management Contacts Table -->
         <div class="border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--background)]">
-          <div class="max-h-96 overflow-y-auto custom-scrollbar divide-y divide-[var(--border)]" id="contactsTableList">
-            <!-- Rendered via JS -->
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900/80 text-[var(--muted-foreground)] uppercase text-[10px] tracking-wider font-bold border-b border-[var(--border)]">
+                <tr>
+                  <th class="p-3 w-10 text-center">
+                    <input type="checkbox" onchange="toggleSelectAllMgmt(this)" class="rounded border-slate-700 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                  </th>
+                  <th class="p-3">Nome & Telefone</th>
+                  <th class="p-3">Grupo / Categoria</th>
+                  <th class="p-3">Auditoria (Cadastro)</th>
+                  <th class="p-3 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="contactsManagementTableBody" class="divide-y divide-[var(--border)] text-slate-200">
+                <tr>
+                  <td colspan="5" class="p-6 text-center text-slate-400 font-medium">Carregando contatos...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1159,7 +1196,97 @@
               <h4 class="font-extrabold text-white text-sm">Montanha WhatsApp Automation</h4>
               <p class="text-xs text-slate-300 leading-relaxed">Automação SaaS multi-tenant, CRM e disparos inteligentes via WhatsApp.</p>
             </div>
-            <button onclick="switchTab('dashboard')" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold py-2 rounded-xl transition cursor-pointer">
+          <div class="border-t border-[var(--border)] pt-3 flex justify-between items-center">
+        <button onclick="closeTemplatesModal()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">Fechar</button>
+        <button onclick="addNewTemplate()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">Salvar Modelo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL CRIAR / EDITAR CONTATO -->
+  <!-- ==================================================================== -->
+  <div id="contactFormModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
+        <h3 id="contactModalTitle" class="font-bold text-base text-white">👤 Novo Contato</h3>
+        <button onclick="closeContactFormModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveContactForm(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="editContactId" value="">
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Nome Completo do Contato:</label>
+          <input type="text" id="contactFormName" required placeholder="Ex: Maria Silva" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Telefone / WhatsApp (com DDD):</label>
+          <input type="text" id="contactFormPhone" required placeholder="Ex: 558399259385" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-mono">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Grupo / Categoria:</label>
+          <div class="flex gap-2">
+            <select id="contactFormCategory" class="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500 font-medium">
+              <option value="GERAL">📋 GERAL</option>
+              <option value="CTH">🏋️ CTH</option>
+              <option value="LEAD">🚀 LEAD</option>
+              <option value="PT">👤 PT</option>
+            </select>
+            <button type="button" onclick="promptNewCategory()" class="bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 px-3 rounded-xl font-bold text-xs">+ Novo Grupo</button>
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeContactFormModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl transition">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-2.5 rounded-xl shadow-lg transition">
+            Salvar Contato
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL GERENCIAR GRUPOS DE CONTATOS -->
+  <!-- ==================================================================== -->
+  <div id="groupsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
+        <h3 class="font-bold text-base text-white">🏷️ Criar e Organizar Grupos</h3>
+        <button onclick="closeGroupsModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Nome do Novo Grupo:</label>
+          <div class="flex gap-2">
+            <input type="text" id="newGroupNameInput" placeholder="Ex: Alunos VIP 2026" class="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-xl p-2.5 text-white outline-none focus:border-purple-500">
+            <button type="button" onclick="addCustomGroupFromInput()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2.5 rounded-xl transition shadow">
+              Criar
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-[var(--border)] pt-3 space-y-2">
+          <h4 class="font-bold text-slate-300">Grupos Existentes:</h4>
+          <div id="groupsListContainer" class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-[var(--border)] pt-3 text-right">
+        <button onclick="closeGroupsModal()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div><button onclick="switchTab('dashboard')" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold py-2 rounded-xl transition cursor-pointer">
               Acessar Painel
             </button>
           </div>
@@ -1571,6 +1698,7 @@
         auditLogs.forEach(log => {
           const targets = Array.isArray(log.target_contacts) ? log.target_contacts.join(', ') : (log.target_contacts || 'N/A');
           items.push({
+            id: log.id || ('audit_' + log.timestamp),
             date: new Date(log.timestamp).toLocaleString('pt-BR'),
             rawDate: new Date(log.timestamp).getTime(),
             targets: targets,
@@ -1586,6 +1714,7 @@
         schedules.forEach(s => {
           if (s.status === 'active') {
             items.push({
+              id: s.id || ('sched_' + s.createdAt),
               date: s.datetime || 'Data programada',
               rawDate: new Date(s.datetime).getTime() || Date.now(),
               targets: s.contact || 'Destinatário',
@@ -1604,7 +1733,7 @@
         if (items.length === 0) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="5" class="p-6 text-center text-slate-400">
+              <td colspan="6" class="p-6 text-center text-slate-400">
                 <span class="block text-lg mb-1">📭</span>
                 Nenhum disparo ou agendamento registrado até o momento.
               </td>
@@ -1625,9 +1754,14 @@
               <div class="mb-0.5 text-[10px] font-semibold text-slate-400">${item.type}</div>
               ${item.statusBadge}
             </td>
-            <td class="p-3 text-right whitespace-nowrap">
+            <td class="p-3 whitespace-nowrap">
               <span class="block font-mono text-[10px] text-slate-400">${item.auditUser}</span>
               <span class="block font-mono text-[9px] text-slate-500">IP: ${item.clientIp}</span>
+            </td>
+            <td class="p-3 text-right whitespace-nowrap">
+              <button type="button" onclick="deleteSingleHistoryItem('${item.id}')" title="Excluir este disparo do histórico" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 px-2 py-1 rounded-lg text-xs font-bold transition">
+                🗑️ Excluir
+              </button>
             </td>
           </tr>
         `).join('');
@@ -1639,6 +1773,25 @@
       } catch (err) {
         console.warn('Sync live history warning:', err.message);
       }
+    }
+
+    async function deleteSingleHistoryItem(id) {
+      if (!confirm('Deseja excluir este item do histórico de disparos?')) return;
+      const baseUrl = getApiBaseUrl();
+      try {
+        await fetch(baseUrl + '/api/delete-history-item', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+      } catch(e){}
+
+      const userEmail = (currentUser && currentUser.email) ? currentUser.email : 'demo@eduflow.app';
+      let history = loadDispatchesHistory();
+      history = history.filter(h => h.id !== id);
+      localStorage.setItem('eduflow_history_' + userEmail, JSON.stringify(history));
+      
+      syncLiveHistoryFromBackend();
     }
 
     function startWaPolling() {
@@ -2151,10 +2304,12 @@
     }
 
     function loadUserData() {
-      const savedContacts = localStorage.getItem('eduflow_contacts_' + currentUser.email);
+      const email = (currentUser && currentUser.email) ? currentUser.email : 'demo@eduflow.app';
+      const savedContacts = localStorage.getItem('eduflow_contacts_' + email);
       userContacts = savedContacts ? JSON.parse(savedContacts) : [];
       
       renderContactsTable();
+      renderContactsManagementTable();
       renderQuickTemplates();
       renderDispatchesHistory();
       initDatePickers();
@@ -2164,8 +2319,228 @@
     }
 
     function saveUserContacts() {
-      localStorage.setItem('eduflow_contacts_' + currentUser.email, JSON.stringify(userContacts));
+      const email = (currentUser && currentUser.email) ? currentUser.email : 'demo@eduflow.app';
+      localStorage.setItem('eduflow_contacts_' + email, JSON.stringify(userContacts));
       renderContactsTable();
+      renderContactsManagementTable();
+    }
+
+    let mgmtSelectedIds = new Set();
+
+    function renderContactsManagementTable() {
+      const tbody = document.getElementById('contactsManagementTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const query = (document.getElementById('contactsMgmtSearch')?.value || '').toLowerCase();
+      const cat = document.getElementById('contactsMgmtCatFilter')?.value || 'all';
+
+      const filtered = userContacts.filter(c => {
+        const matchesQuery = !query || c.name.toLowerCase().includes(query) || c.phone.includes(query);
+        const matchesCat = cat === 'all' || c.category === cat;
+        return matchesQuery && matchesCat;
+      });
+
+      const countLabel = document.getElementById('mgmtSelectedCount');
+      if (countLabel) countLabel.innerText = `${mgmtSelectedIds.size} selecionado(s)`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-6 text-center text-slate-400">
+              Nenhum contato encontrado com os filtros selecionados.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(c => {
+        const tr = document.createElement('tr');
+        const isChecked = mgmtSelectedIds.has(c.id);
+        const createdDate = c.created_at ? new Date(c.created_at).toLocaleDateString('pt-BR') : 'Base Sincronizada';
+        tr.className = 'hover:bg-slate-800/40 transition text-xs';
+        tr.innerHTML = `
+          <td class="p-3 text-center">
+            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectMgmtContact('${c.id}')" class="rounded border-slate-700 text-purple-600 focus:ring-purple-500 cursor-pointer">
+          </td>
+          <td class="p-3">
+            <div class="font-bold text-white">${c.name}</div>
+            <div class="text-[10px] text-slate-400 font-mono">+${c.phone}</div>
+          </td>
+          <td class="p-3">
+            <span class="bg-purple-600/20 text-purple-300 border border-purple-500/30 text-[10px] px-2.5 py-1 rounded-full font-bold">
+              ${c.category || 'GERAL'}
+            </span>
+          </td>
+          <td class="p-3 text-slate-400 font-mono text-[10px]">
+            ${createdDate}
+          </td>
+          <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
+            <button onclick="openEditContactModal('${c.id}')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 px-2.5 py-1 rounded-lg font-bold text-[11px] transition">
+              ✏️ Editar
+            </button>
+            <button onclick="deleteSingleContact('${c.id}')" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-lg font-bold text-[11px] transition">
+              🗑️ Excluir
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function toggleSelectMgmtContact(id) {
+      if (mgmtSelectedIds.has(id)) mgmtSelectedIds.delete(id);
+      else mgmtSelectedIds.add(id);
+      renderContactsManagementTable();
+    }
+
+    function toggleSelectAllMgmt(masterCb) {
+      if (masterCb.checked) {
+        userContacts.forEach(c => mgmtSelectedIds.add(c.id));
+      } else {
+        mgmtSelectedIds.clear();
+      }
+      renderContactsManagementTable();
+    }
+
+    function deleteSingleContact(id) {
+      const contact = userContacts.find(c => c.id === id);
+      if (!contact) return;
+      if (confirm(`Tem certeza que deseja excluir o contato "${contact.name}" da sua base?`)) {
+        userContacts = userContacts.filter(c => c.id !== id);
+        selectedContactIds.delete(id);
+        mgmtSelectedIds.delete(id);
+        saveUserContacts();
+      }
+    }
+
+    function bulkDeleteContacts() {
+      if (mgmtSelectedIds.size === 0) return alert('Selecione ao menos um contato na tabela para excluir.');
+      if (confirm(`Deseja excluir permanentemente os ${mgmtSelectedIds.size} contatos selecionados?`)) {
+        userContacts = userContacts.filter(c => !mgmtSelectedIds.has(c.id));
+        mgmtSelectedIds.forEach(id => selectedContactIds.delete(id));
+        mgmtSelectedIds.clear();
+        saveUserContacts();
+      }
+    }
+
+    function openAddContactModalDialog() {
+      document.getElementById('editContactId').value = '';
+      document.getElementById('contactModalTitle').innerText = '👤 Novo Contato';
+      document.getElementById('contactFormName').value = '';
+      document.getElementById('contactFormPhone').value = '';
+      document.getElementById('contactFormCategory').value = 'GERAL';
+      document.getElementById('contactFormModal').classList.remove('hidden');
+    }
+
+    function openEditContactModal(id) {
+      const c = userContacts.find(item => item.id === id);
+      if (!c) return;
+      document.getElementById('editContactId').value = c.id;
+      document.getElementById('contactModalTitle').innerText = '✏️ Editar Contato';
+      document.getElementById('contactFormName').value = c.name;
+      document.getElementById('contactFormPhone').value = c.phone;
+      document.getElementById('contactFormCategory').value = c.category || 'GERAL';
+      document.getElementById('contactFormModal').classList.remove('hidden');
+    }
+
+    function closeContactFormModal() {
+      document.getElementById('contactFormModal').classList.add('hidden');
+    }
+
+    function handleSaveContactForm(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editContactId').value;
+      const name = document.getElementById('contactFormName').value.trim();
+      const phone = document.getElementById('contactFormPhone').value.replace(/[^0-9]/g, '');
+      const category = document.getElementById('contactFormCategory').value.toUpperCase();
+
+      if (!name || !phone) return alert('Preencha nome e telefone válidos.');
+
+      if (editId) {
+        const c = userContacts.find(item => item.id === editId);
+        if (c) {
+          c.name = name;
+          c.phone = phone;
+          c.category = category;
+        }
+      } else {
+        userContacts.unshift({
+          id: 'c_' + Date.now(),
+          name,
+          phone,
+          category,
+          created_at: new Date().toISOString()
+        });
+      }
+
+      saveUserContacts();
+      closeContactFormModal();
+    }
+
+    function openManageGroupsModal() {
+      renderGroupsList();
+      document.getElementById('groupsModal').classList.remove('hidden');
+    }
+
+    function closeGroupsModal() {
+      document.getElementById('groupsModal').classList.add('hidden');
+    }
+
+    function promptNewCategory() {
+      const name = prompt('Informe o nome do novo Grupo / Categoria:');
+      if (name && name.trim()) {
+        const cat = name.trim().toUpperCase();
+        addCategoryToSelects(cat);
+        document.getElementById('contactFormCategory').value = cat;
+      }
+    }
+
+    function addCustomGroupFromInput() {
+      const input = document.getElementById('newGroupNameInput');
+      if (!input || !input.value.trim()) return alert('Informe o nome do grupo.');
+      const cat = input.value.trim().toUpperCase();
+      addCategoryToSelects(cat);
+      input.value = '';
+      renderGroupsList();
+    }
+
+    function addCategoryToSelects(catName) {
+      const selects = ['categoryFilterSelect', 'contactsMgmtCatFilter', 'contactFormCategory'];
+      selects.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !Array.from(el.options).some(opt => opt.value === catName)) {
+          const opt = document.createElement('option');
+          opt.value = catName;
+          opt.innerText = '🏷️ ' + catName;
+          el.appendChild(opt);
+        }
+      });
+    }
+
+    function renderGroupsList() {
+      const container = document.getElementById('groupsListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      const categories = new Set(['CTH', 'LEAD', 'PT', 'GERAL']);
+      userContacts.forEach(c => { if (c.category) categories.add(c.category); });
+
+      categories.forEach(cat => {
+        const count = userContacts.filter(c => c.category === cat).length;
+        const item = document.createElement('div');
+        item.className = 'p-2 bg-[var(--background)] border border-[var(--border)] rounded-lg flex justify-between items-center text-xs';
+        item.innerHTML = `
+          <span class="font-bold text-white">🏷️ ${cat}</span>
+          <span class="text-[11px] text-purple-400 font-semibold">${count} contato(s)</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function triggerDeviceFileInput() {
+      document.getElementById('deviceFileInput').click();
     }
 
     function selectAllVisibleContacts() {
@@ -2361,20 +2736,23 @@
     }
 
     function updateDispatchTargetSummary() {
-      const modeSelect = document.getElementById('dispatchModeSelect');
-      const mode = modeSelect ? modeSelect.value : 'selected';
+      const catSelect = document.getElementById('categoryFilterSelect');
+      const cat = catSelect ? catSelect.value : 'all';
       const badge = document.getElementById('dispatchTargetSummary');
       if (!badge) return;
 
-      if (mode === 'selected') {
-        if (selectedContactIds.size === 0) {
-          badge.innerText = `👥 Todos os Contatos da Base (${userContacts.length})`;
+      if (selectedContactIds.size === 0) {
+        if (cat !== 'all') {
+          const catContacts = userContacts.filter(c => c.category === cat);
+          badge.innerText = `👥 Categoria ${cat}: ${catContacts.length} contato(s) da categoria`;
+          badge.className = 'font-bold text-sm text-cyan-300 block';
         } else {
-          badge.innerText = `👥 ${selectedContactIds.size} Contato(s) Selecionado(s) Nominalmente`;
+          badge.innerText = '⚠️ Nenhum contato selecionado (Selecione ao menos 1 para disparar)';
+          badge.className = 'font-bold text-sm text-amber-400 block';
         }
-      } else if (mode.startsWith('category_')) {
-        const cat = mode.replace('category_', '');
-        badge.innerText = cat === 'all' ? `👥 Todos os Contatos da Base (${userContacts.length})` : `👥 Categoria ${cat}`;
+      } else {
+        badge.innerText = `👥 ${selectedContactIds.size} Contato(s) Selecionado(s) Nominalmente`;
+        badge.className = 'font-bold text-sm text-purple-300 block';
       }
     }
 
@@ -2580,27 +2958,22 @@
         return;
       }
 
-      let targetContacts = [];
-      const modeSelect = document.getElementById('dispatchModeSelect');
-      const mode = modeSelect ? modeSelect.value : 'selected';
+      const catSelect = document.getElementById('categoryFilterSelect');
+      const cat = catSelect ? catSelect.value : 'all';
 
-      if (mode === 'selected') {
-        if (selectedContactIds.size === 0) {
-          targetContacts = userContacts.map(c => c.name || c.phone);
-        } else {
-          targetContacts = userContacts.filter(c => selectedContactIds.has(c.id)).map(c => c.name || c.phone);
-        }
-      } else if (mode.startsWith('category_')) {
-        const cat = mode.replace('category_', '');
-        if (cat === 'all') {
-          targetContacts = userContacts.map(c => c.name || c.phone);
-        } else {
-          targetContacts = userContacts.filter(c => c.category === cat).map(c => c.name || c.phone);
-        }
+      let targetContacts = [];
+
+      if (selectedContactIds.size > 0) {
+        targetContacts = userContacts.filter(c => selectedContactIds.has(c.id)).map(c => c.name || c.phone);
+      } else if (cat !== 'all') {
+        targetContacts = userContacts.filter(c => c.category === cat).map(c => c.name || c.phone);
+      } else {
+        alert('⚠️ Por favor, selecione ao menos 1 contato na lista (ou escolha uma categoria) antes de realizar o disparo.');
+        return;
       }
 
       if (targetContacts.length === 0) {
-        alert('Nenhum contato encontrado na sua agenda para o disparo.');
+        alert('⚠️ Nenhum contato válido encontrado na sua seleção para o disparo.');
         return;
       }
 
