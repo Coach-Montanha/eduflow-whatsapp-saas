@@ -182,15 +182,29 @@ export async function checkProjectAccess(userId, projectId, email) {
     try {
       const parsed = JSON.parse(localSub);
       const isExpired = parsed.access_expires_at ? new Date(parsed.access_expires_at) <= new Date() : false;
-      if (parsed.payment_status === 'PAGO' && !isExpired && parsed.is_active !== false) {
+      const isTrial = parsed.payment_status === 'AVALIAÇÃO' || parsed.payment_status === 'TRIAL';
+      if ((parsed.payment_status === 'PAGO' || isTrial) && !isExpired && parsed.is_active !== false) {
         return {
           hasAccess: true,
-          status: 'PAGO',
+          status: isTrial ? 'AVALIAÇÃO' : 'PAGO',
           expiresAt: parsed.access_expires_at,
-          message: 'Acesso liberado.'
+          message: isTrial ? 'Acesso liberado em período de avaliação (Trial 7d).' : 'Acesso liberado.'
         };
       }
     } catch (err) {}
+  }
+
+  // Support trial session in WhatsApp Automation
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('trial') === '1' || params.has('impersonate')) {
+      return {
+        hasAccess: true,
+        status: 'AVALIAÇÃO',
+        expiresAt: null,
+        message: 'Acesso liberado em modo avaliação.'
+      };
+    }
   }
 
   return {
@@ -202,21 +216,20 @@ export async function checkProjectAccess(userId, projectId, email) {
 }
 
 const APP_NAMES_MAP = {
-  'smart-language': { name: 'Montanha Language AI', url: 'http://localhost:5173' },
-  'eduflow-finance': { name: 'Montanha Personal Studio', url: 'http://localhost:5174' },
-  'construtor-pdf': { name: 'Montanha PDF Studio', url: 'http://localhost:5175' },
-  'sistema-hibrido': { name: 'Montanha Hybrid Training', url: 'http://localhost:5176' },
-  'whatsapp-lovable': { name: 'Montanha WhatsApp Automation', url: 'http://localhost:5177' },
-  'all': { name: 'Ecossistema Montanha (5 Apps)', url: 'http://localhost:5177' }
+  'smart-language': { name: 'Montanha Language AI', url: 'https://montanha-language-ai.vercel.app' },
+  'eduflow-finance': { name: 'Montanha Personal Studio', url: 'https://montanha-personal-studio.vercel.app' },
+  'construtor-pdf': { name: 'Montanha PDF Studio', url: 'https://montanha-pdf-studio.vercel.app' },
+  'sistema-hibrido': { name: 'Montanha Hybrid Training', url: 'https://montanha-hybrid-training.vercel.app' },
+  'whatsapp-lovable': { name: 'Montanha WhatsApp Automation', url: 'https://montanha-whatsapp-automation.vercel.app' },
+  'all': { name: 'Ecossistema Montanha (5 Apps Integrados)', url: 'https://montanha-personal-studio.vercel.app' }
 };
 
 export function generateTempPassword() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
-  for (let i = 0; i < 4; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  for (let i = 0; i < 10; i++) {
+    code += Math.floor(Math.random() * 10).toString();
   }
-  return 'MTN-' + code;
+  return code;
 }
 
 export async function generateTempAccessInvite(clientName, email, phone, projectId, durationDays) {
@@ -236,13 +249,16 @@ export async function generateTempAccessInvite(clientName, email, phone, project
     const days = Number(durationDays) || 30;
     const d = new Date(Date.now() + days * 24 * 3600 * 1000);
     expiresAt = d.toISOString();
-    validityLabel = days + ' dias';
+    validityLabel = days === 7 ? '7 dias (Trial / Avaliação)' : days + ' dias';
   }
 
   const appInfo = APP_NAMES_MAP[projectId] || { name: projectId, url: typeof window !== 'undefined' ? window.location.origin : '' };
   const expiresFormatted = expiresAt ? expiresAt.split('T')[0] : 'Indefinido';
+  const isTrial = durationDays === '7' || durationDays === 7;
+  const statusToSet = isTrial ? 'AVALIAÇÃO' : 'PAGO';
+  const accessUrl = `${appInfo.url}?trial=1&email=${encodeURIComponent(cleanEmail)}&name=${encodeURIComponent(clientName)}&pass=${tempPassword}&token=${Date.now()}`;
 
-  const inviteText = `Olá, ${clientName}! 🎟️\n\nSeu acesso ao *${appInfo.name}* (Ecossistema Montanha) foi gerado com sucesso!\n\n🔑 *Login:* ${cleanEmail}\n🔒 *Senha Temporária:* ${tempPassword}\n⏳ *Validade:* ${validityLabel} (Até ${expiresFormatted})\n🌐 *Link de Acesso:* ${appInfo.url}\n\nBons treinos e excelentes resultados! 🚀`;
+  const inviteText = `Olá, ${clientName}! 🎟️\n\nSeu acesso ao *${appInfo.name}* (Ecossistema Montanha) foi gerado com sucesso!\n\n🔑 *Login:* ${cleanEmail}\n🔒 *Senha de 10 Dígitos:* ${tempPassword}\n⏳ *Validade:* ${validityLabel} (Até ${expiresFormatted})\n🌐 *Link de Acesso Direto (1-Clique):* ${accessUrl}\n\nBons treinos e excelentes resultados! 🚀`;
 
   const phoneParam = cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone;
   const whatsappUrl = `https://wa.me/${phoneParam}?text=${encodeURIComponent(inviteText)}`;
@@ -258,7 +274,7 @@ export async function generateTempAccessInvite(clientName, email, phone, project
       id: `sub_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       email: cleanEmail,
       project_id: pid,
-      payment_status: 'PAGO',
+      payment_status: statusToSet,
       access_expires_at: expiresAt,
       is_active: true,
       created_at: new Date().toISOString()
