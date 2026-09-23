@@ -259,11 +259,11 @@
           <div class="flex justify-between items-center mb-1">
             <label class="font-semibold text-slate-300">Senha de Acesso</label>
             <div class="flex items-center gap-2">
-              <span class="text-[10px] text-purple-400 font-bold bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/30">10 números</span>
+              <span class="text-[10px] text-purple-400 font-bold bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/30">10 números ou MTN</span>
               <button type="button" onclick="showPasswordResetPrompt()" class="text-xs text-purple-400 hover:underline">Esqueci a senha</button>
             </div>
           </div>
-          <input type="password" id="authPassword" required inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="•••••••••• (10 dígitos)" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-purple-500 font-mono tracking-widest text-sm">
+          <input type="password" id="authPassword" required maxlength="12" placeholder="10 dígitos ou código MTN-XXXX" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-purple-500 font-mono tracking-widest text-sm">
         </div>
 
         <button type="submit" id="authSubmitBtn" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition cursor-pointer">
@@ -574,7 +574,24 @@
                 </button>
               </div>
 
-              <textarea id="messageText" rows="4" placeholder="Escreva a mensagem personalizada aqui..." class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-white outline-none focus:border-purple-500 resize-none font-sans text-xs leading-relaxed"></textarea>
+              <textarea id="messageText" rows="4" placeholder="Escreva a mensagem personalizada aqui... Ex: {Olá|Oi|Tudo bem}, {seu agendamento|seu treino} está pronto!" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-white outline-none focus:border-purple-500 resize-none font-sans text-xs leading-relaxed"></textarea>
+            </div>
+
+            <!-- Anti-Ban Cadence Protection Info Card -->
+            <div class="bg-purple-950/40 border border-purple-500/30 rounded-xl p-3 text-[11px] space-y-2 text-purple-200 shadow-inner">
+              <div class="flex items-center justify-between font-bold text-amber-300">
+                <span class="flex items-center gap-1.5 text-xs">🛡️ Proteção Antibloqueio WhatsApp</span>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono font-bold">15s-45s / Lote 10</span>
+              </div>
+              <p class="text-slate-300 leading-normal">
+                Disparos em massa utilizam intervalo humano variado (15s a 45s) com pausa automática de 2 min a cada 10 disparos para proteger seu chip contra restrições da Meta.
+              </p>
+              <div class="text-[10px] text-purple-200 bg-purple-900/50 p-2 rounded-lg border border-purple-500/30 flex items-start gap-1.5">
+                <span class="text-amber-400">💡</span>
+                <div>
+                  <strong class="text-amber-300">Dica Anti-Spam (Spin-Tax):</strong> Use chaves com opções divididas por barra como <code>{Olá|Oi|Tudo bem}</code> no texto. O sistema alternará aleatoriamente as palavras em cada envio!
+                </div>
+              </div>
             </div>
 
             <!-- Scheduling / Immediate controls -->
@@ -1554,6 +1571,7 @@
     let uploadedCustomFileName = null;
 
     const MOCK_MASTER_SUBSCRIPTIONS = [
+      { id: 'sub_henrique', email: 'Henriqueecoutinhoo@gmail.com', project_id: 'whatsapp-lovable', payment_status: 'AVALIAÇÃO', access_expires_at: '2026-09-30T23:59:59Z', is_active: true },
       { id: 'sub_1', email: 'cliente.pro@montanha.app', project_id: 'smart-language', payment_status: 'PAGO', access_expires_at: new Date(Date.now() + 365*86400000).toISOString(), is_active: true },
       { id: 'sub_2', email: 'studio.fit@eduflow.com', project_id: 'eduflow-finance', payment_status: 'PAGO', access_expires_at: new Date(Date.now() + 90*86400000).toISOString(), is_active: true },
       { id: 'sub_3', email: 'editor.pdf@montanha.com', project_id: 'construtor-pdf', payment_status: 'PENDENTE', access_expires_at: new Date(Date.now() + 7*86400000).toISOString(), is_active: true },
@@ -1571,7 +1589,13 @@
       let subs = MOCK_MASTER_SUBSCRIPTIONS;
       const saved = localStorage.getItem('master_admin_subscriptions');
       if (saved) {
-        try { subs = JSON.parse(saved); } catch(e) {}
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            const hasHenrique = parsed.some(s => s.email.toLowerCase() === 'henriqueecoutinhoo@gmail.com');
+            subs = hasHenrique ? parsed : [MOCK_MASTER_SUBSCRIPTIONS[0], ...parsed];
+          }
+        } catch(e) {}
       }
 
       const filtered = subs.filter(s => {
@@ -1920,16 +1944,37 @@
     async function handleAuthSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
+      const password = document.getElementById('authPassword').value.trim();
+      const cleanEmail = email.toLowerCase();
+      const upperPass = password.toUpperCase();
 
-      if (!/^\d{10}$/.test(password)) {
-        alert('A senha deve conter exatamente 10 dígitos numéricos.');
+      const is10Digits = /^\d{10}$/.test(password);
+      const isMtnCode = /^MTN-[A-Z0-9]{4}$/i.test(password);
+      const isHenrique = cleanEmail === 'henriqueecoutinhoo@gmail.com' && (upperPass === 'MTN-M9P8' || is10Digits);
+
+      if (!is10Digits && !isMtnCode && !isHenrique) {
+        alert('A senha deve conter 10 dígitos numéricos ou o código temporário MTN-XXXX.');
         return;
       }
 
       // Alberto Sarly Master Credentials verification
-      if ((email.toLowerCase() === 'albertosarly@gmail.com' || email.toLowerCase() === 'albertosarly') && password !== '3862858747') {
+      if ((cleanEmail === 'albertosarly@gmail.com' || cleanEmail === 'albertosarly') && password !== '3862858747') {
         alert('Senha incorreta para a conta master.');
+        return;
+      }
+
+      // Specific credential check for Henrique Coutinho
+      if (cleanEmail === 'henriqueecoutinhoo@gmail.com') {
+        if (upperPass !== 'MTN-M9P8' && !is10Digits) {
+          alert('Senha temporária incorreta para o convite de avaliação.');
+          return;
+        }
+        localStorage.setItem('ecosystem_sub_whatsapp-lovable_henriqueecoutinhoo@gmail.com', JSON.stringify({
+          payment_status: 'AVALIAÇÃO',
+          access_expires_at: '2026-09-30',
+          is_active: true
+        }));
+        loginUser('Henriqueecoutinhoo@gmail.com');
         return;
       }
 
