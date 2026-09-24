@@ -1757,20 +1757,32 @@
         });
 
         schedules.forEach(s => {
-          if (s.status === 'active') {
-            items.push({
-              id: s.id || ('sched_' + s.createdAt),
-              date: s.datetime || 'Data programada',
-              rawDate: new Date(s.datetime).getTime() || Date.now(),
-              targets: s.contact || 'Destinatário',
-              message: s.message ? s.message.substring(0, 100) : '',
-              media: s.imagePath ? '📎 Anexo' : '🚫 Texto',
-              type: '⏳ Programado',
-              statusBadge: '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse">⏳ Aguardando Horário</span>',
-              auditUser: currentUser ? currentUser.email : 'demo@eduflow.app',
-              clientIp: '127.0.0.1'
-            });
+          let badge = '';
+          let typeLabel = '⏳ Programado';
+
+          if (s.status === 'executed') {
+            typeLabel = '✓ Enviado';
+            badge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✓ Concluído</span>';
+          } else if (s.status === 'failed') {
+            typeLabel = '⚠️ Falha';
+            badge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">❌ Falha ao Enviar</span>';
+          } else {
+            typeLabel = '⏳ Programado';
+            badge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse">⏳ Aguardando Horário</span>';
           }
+
+          items.push({
+            id: s.id || ('sched_' + s.createdAt),
+            date: s.datetime || 'Data programada',
+            rawDate: new Date(s.datetime ? s.datetime.replace(' às ', 'T').replace(' ', 'T') : s.createdAt).getTime() || Date.now(),
+            targets: s.contact || 'Destinatário',
+            message: s.message ? s.message.substring(0, 100) : '',
+            media: s.imagePath ? '📎 Anexo' : '🚫 Texto',
+            type: typeLabel,
+            statusBadge: badge,
+            auditUser: currentUser ? currentUser.email : 'demo@eduflow.app',
+            clientIp: '127.0.0.1'
+          });
         });
 
         items.sort((a, b) => b.rawDate - a.rawDate);
@@ -1813,7 +1825,8 @@
 
         const statDispatchesCount = document.getElementById('statDispatchesCount');
         if (statDispatchesCount) {
-          statDispatchesCount.textContent = auditLogs.length;
+          const executedCount = schedules.filter(s => s.status === 'executed').length;
+          statDispatchesCount.textContent = (auditLogs.length + executedCount);
         }
       } catch (err) {
         console.warn('Sync live history warning:', err.message);
